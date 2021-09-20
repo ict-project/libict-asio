@@ -8,6 +8,8 @@ language:
 compiler:
   - gcc
 addons:
+  homebrew:
+    packages: openssl
   apt:
     sources:
       - ubuntu-toolchain-r-test
@@ -16,7 +18,7 @@ addons:
       - g++-9
       - cmake
       - rpm
-      - libssl1.1
+      - openssl
 install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" = "g++" ]; then export CXX="g++-9" CC="gcc-9"; fi
 script:
