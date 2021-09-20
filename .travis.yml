@@ -16,7 +16,7 @@ addons:
       - g++-9
       - cmake
       - rpm
-      - libssl1
+      - libssl1.1
 install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" = "g++" ]; then export CXX="g++-9" CC="gcc-9"; fi
 script:
