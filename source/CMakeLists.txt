@@ -45,17 +45,17 @@ set(CMAKE_SOURCE_FILES
 include_directories(BEFORE SYSTEM ${OPENSSL_INCLUDE_DIR})
 
 add_library(ict-static STATIC ${CMAKE_SOURCE_FILES})
-target_link_libraries(ict-static ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(ict-static ${OPENSSL_CRYPTO_LIBRARIES} ${OPENSSL_SSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 set_target_properties(ict-static  PROPERTIES OUTPUT_NAME ict-${LIBRARY_NAME})
 target_include_directories(ict-static PRIVATE ${ASIO_DIR})
 
 add_library(ict-shared SHARED ${CMAKE_SOURCE_FILES})
-target_link_libraries(ict-shared ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(ict-shared ${OPENSSL_CRYPTO_LIBRARIES} ${OPENSSL_SSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 set_target_properties(ict-shared  PROPERTIES OUTPUT_NAME ict-${LIBRARY_NAME})
 target_include_directories(ict-shared PRIVATE ${ASIO_DIR})
 
 add_executable(${PROJECT_NAME}-test all.hpp test.cpp ${CMAKE_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME}-test ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${PROJECT_NAME}-test ${OPENSSL_CRYPTO_LIBRARIES} ${OPENSSL_SSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(${PROJECT_NAME}-test PRIVATE ${ASIO_DIR})
 target_compile_definitions(${PROJECT_NAME}-test PUBLIC -DENABLE_TESTING)
 
