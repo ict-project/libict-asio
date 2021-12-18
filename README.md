@@ -8,9 +8,6 @@ See:
 * [connection](source/connection.md) for more details about connection interface;
 * [connector](source/connector.md) for more details about connection handling (server and client side).
 
-Releases:
-* Branch release-v1
-
 ## Building instructions
 
 ```sh
