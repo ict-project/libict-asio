@@ -73,14 +73,17 @@ void ioSignal(){
   });
 }
 void ioRun(){
+  ioRun([]{
+    ioService().run();
+  });
+}
+void ioRun(const std::function<void(void)> &f){
   static const unsigned int t(std::thread::hardware_concurrency());
   if (!ioThreads()){
     ioService().reset();
     ioThreads().reset(new vector_thread_t);
     for (;ioThreads()->size()<t;){
-      ioThreads()->emplace_back([]{
-        ioService().run();
-      });
+      ioThreads()->emplace_back(f);
     }
   }
 }
@@ -98,10 +101,14 @@ void ioRunJoin(){
   ioRun();
   ioJoin();
 }
+void ioRunJoin(const std::function<void(void)> &f){
+  ioRun(f);
+  ioJoin();
+}
 void ioStop(){
   ioService().stop();
 }
-
+//============================================
 }}
 //============================================
 #ifdef ENABLE_TESTING

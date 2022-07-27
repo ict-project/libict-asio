@@ -61,10 +61,12 @@ void ioSignal(const signal_handler_t & handler);
 void ioSignal();
 //! Uruchamia ::asio::io_service::run() w wielu osobnych wątkach
 void ioRun();
+void ioRun(const std::function<void(void)> &f);
 //! Oczekuje na zakończenie ::asio::io_service::run() w wielu osobnych wątkach
 void ioJoin();
 //! Uruchamia i oczekuje na zakończenie ::asio::io_service::run() w wielu osobnych wątkach
 void ioRunJoin();
+void ioRunJoin(const std::function<void(void)> &f);
 //! Wykonuje ::asio::io_service::stop()
 void ioStop();
 //============================================
