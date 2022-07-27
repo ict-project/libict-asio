@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _ASIO__HEADER
 #define _ASIO__HEADER
 //============================================
+#include <functional>
 #include <map>
 #include <string>
 #include <asio/io_service.hpp>
