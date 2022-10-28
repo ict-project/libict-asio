@@ -52,6 +52,7 @@ vector_thread_ptr & ioThreads(){
 }
 ::asio::io_service & ioService(){
   static ::asio::io_service io;
+  static auto wg=::asio::make_work_guard(io);
   return(io);
 }
 void ioSignal(const signal_handler_t & handler){
@@ -80,7 +81,7 @@ void ioRun(){
 void ioRun(const std::function<void(void)> &f){
   static const unsigned int t(std::thread::hardware_concurrency());
   if (!ioThreads()){
-    ioService().reset();
+    ioService().restart();
     ioThreads().reset(new vector_thread_t);
     for (;ioThreads()->size()<t;){
       ioThreads()->emplace_back(f);

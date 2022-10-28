@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <string>
 #include <asio/io_service.hpp>
+#include <asio/strand.hpp>
 //============================================
 namespace ict { namespace asio {
 //============================================
