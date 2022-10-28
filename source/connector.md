@@ -16,6 +16,9 @@ void close();
 bool is_open() const;
 //! Tests if error occured.
 bool is_error() const;
+//! Cancels all asynchronous operations associated with the connector.
+void cancel();
+void cancel(error_code_t& ec); 
 //! Handler for a new connection.
 void async_connection(const ict::asio::connection::connection_handler_t &handler);
 ```

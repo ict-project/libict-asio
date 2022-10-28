@@ -177,6 +177,12 @@ public:
   bool is_open() const{
     return(BasicConnector<Socket>::error?false:a.is_open());
   }
+  void cancel(){
+    a.cancel();
+  }
+  void cancel(error_code_t& ec){
+    a.cancel(ec);
+  }
   void async_connection(const ict::asio::connection::connection_handler_t & handler){
     if (BasicConnector<Socket>::error) return;
     if (BasicConnector<Socket>::ready){
@@ -281,6 +287,12 @@ public:
   }
   bool is_open() const{
     return(BasicConnector<Socket>::error?false:true);
+  }
+  void cancel(){
+    s.cancel();
+  }
+  void cancel(error_code_t& ec){
+    s.cancel(ec);
   }
   void async_connection(const ict::asio::connection::connection_handler_t &handler){
     BasicConnector<Socket>::error=false;

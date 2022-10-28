@@ -76,6 +76,9 @@ public:
   virtual bool is_open() const=0;
   //! Zwraca ilość bajtów oczekujących na odczyt.
   virtual std::size_t available() const=0;
+  //! Anuluje wszystkie asynchroniczne operacje w połączeniu.
+  virtual void cancel()=0;
+  virtual void cancel(error_code_t& ec)=0;
   //! Zapisuje dane do połączenia
   //! @param buffer Bufor z danymi do zapisu (Uwaga: rozmiar musi być ustawiony przed użyciem!).
   //! @param handler Funkcja do obsługi zapisu.

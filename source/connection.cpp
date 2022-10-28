@@ -81,6 +81,12 @@ public:
   std::size_t available() const{
     return(ifc<Stream>::stream.available());
   };
+  void cancel(){
+    ifc<Stream>::stream.cancel();
+  }
+  void cancel(error_code_t& ec){
+    ifc<Stream>::stream.cancel(ec);
+  }
 };
 struct _sni_t{
   std::mutex mutex;
@@ -122,6 +128,12 @@ public:
   std::size_t available() const{
     return(ifc<Stream>::stream.lowest_layer().available());
   };
+  void cancel(){
+    ifc<Stream>::stream.lowest_layer().cancel();
+  }
+  void cancel(error_code_t& ec){
+    ifc<Stream>::stream.lowest_layer().cancel(ec);
+  }
   const std::string & getSNI() {
     std::unique_lock<std::mutex> lock(_sni_().mutex);
     return(_sni_().map.at(ifc<Stream>::stream.native_handle()));

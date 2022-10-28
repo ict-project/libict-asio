@@ -16,6 +16,9 @@ void close();
 bool is_open() const;
 //! Returns the number of bytes waiting to be read.
 std::size_t available() const;
+//! Cancels all asynchronous operations associated with the connection.
+void cancel();
+void cancel(error_code_t& ec); 
 //! Writes data to a connection.
 //! @param buffer Buffer with data to write (Note: size must be set before use!).
 //! @param handler Function executed after write operation.

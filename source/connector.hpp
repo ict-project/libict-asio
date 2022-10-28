@@ -54,6 +54,9 @@ public:
     virtual bool is_open() const=0;
     //! Sprawdza, czy w konektorze wystąpił błąd.
     virtual bool is_error() const=0;
+    //! Anuluje wszystkie asynchroniczne operacje w konektorze.
+    virtual void cancel()=0;
+    virtual void cancel(error_code_t& ec)=0;
     //! Obsługuje nowe połączenie.
     //! @param handler Funkcja do obsługi nowego połaczenia.
     virtual void async_connection(const ict::asio::connection::connection_handler_t &handler)=0;
