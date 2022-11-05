@@ -116,7 +116,7 @@ date_time_t convert(const std::chrono::system_clock::time_point & tp,bool local)
 }
 //============================================
 interface_ptr get(){
-    return interface_ptr(new Timer);
+    return std::make_shared<Timer>();
 }
 interface_ptr get(const time_point_t & tp){
     interface_ptr ptr=get();
