@@ -57,23 +57,35 @@ const static std::string _empty_("");
 template <class Stream> class ifc : public interface{
 protected:
   Stream stream;
+  ::asio::io_service::strand strand;
 public:
-  ifc(Stream & s):stream(std::move(s)){}
-  template<class Socket> ifc(Socket & s,::asio::ssl::context & c):stream(std::move(s),c){}
+  ifc(Stream & s):stream(std::move(s)),strand(ict::asio::ioService()){}
+  template<class Socket> ifc(Socket & s,::asio::ssl::context & c):stream(std::move(s),c),strand(ict::asio::ioService()){}
   void async_write_some(buffer_t& buffer,const handler_t &handler){
     auto self(interface::enable_shared_t::shared_from_this());
-    stream.async_write_some(::asio::buffer(buffer.data(),buffer.size()),handler);
+    strand.post([self,this,&buffer,handler](){
+      stream.async_write_some(::asio::buffer(buffer.data(),buffer.size()),[self,this,handler](const ict::asio::error_code_t& ec,std::size_t s){
+        handler(ec,s);
+      });
+    });
   }
   void async_read_some(buffer_t& buffer,const handler_t &handler){
     auto self(interface::enable_shared_t::shared_from_this());
-    stream.async_read_some(::asio::buffer(buffer.data(),buffer.size()),handler);
+    strand.post([self,this,&buffer,handler](){
+      stream.async_read_some(::asio::buffer(buffer.data(),buffer.size()),[self,this,handler](const ict::asio::error_code_t& ec,std::size_t s){
+        handler(ec,s);
+      });
+    });
   }
 };
 template <class Stream> class ifc_raw : public ifc<Stream>{
 public:
   ifc_raw(Stream & s):ifc<Stream>(s){}
   void close(){
-    ifc<Stream>::stream.close();
+    auto self(interface::enable_shared_t::shared_from_this());
+    ifc<Stream>::strand.post([self,this](){
+      ifc<Stream>::stream.close();
+    });
   }
   bool is_open() const {
     return(ifc<Stream>::stream.is_open());
@@ -82,10 +94,17 @@ public:
     return(ifc<Stream>::stream.available());
   };
   void cancel(){
-    ifc<Stream>::stream.cancel();
+    auto self(interface::enable_shared_t::shared_from_this());
+    ifc<Stream>::strand.post([self,this](){
+      ifc<Stream>::stream.cancel();
+    });
   }
   void cancel(error_code_t& ec){
-    ifc<Stream>::stream.cancel(ec);
+    auto self(interface::enable_shared_t::shared_from_this());
+    ifc<Stream>::strand.post([self,this,ec](){
+      error_code_t e(ec);
+      ifc<Stream>::stream.cancel(e);
+    });
   }
 };
 struct _sni_t{
@@ -119,8 +138,11 @@ public:
     _sni_().map.erase(ifc<Stream>::stream.native_handle());
   }
   void close(){
-    ifc<Stream>::stream.shutdown();
-    ifc<Stream>::stream.lowest_layer().close();
+    auto self(interface::enable_shared_t::shared_from_this());
+    ifc<Stream>::strand.post([self,this](){
+      ifc<Stream>::stream.shutdown();
+      ifc<Stream>::stream.lowest_layer().close();
+    });
   }
   bool is_open() const {
     return(ifc<Stream>::stream.lowest_layer().is_open());
@@ -129,10 +151,17 @@ public:
     return(ifc<Stream>::stream.lowest_layer().available());
   };
   void cancel(){
-    ifc<Stream>::stream.lowest_layer().cancel();
+    auto self(interface::enable_shared_t::shared_from_this());
+    ifc<Stream>::strand.post([self,this](){
+      ifc<Stream>::stream.lowest_layer().cancel();
+    });
   }
   void cancel(error_code_t& ec){
-    ifc<Stream>::stream.lowest_layer().cancel(ec);
+    auto self(interface::enable_shared_t::shared_from_this());
+    ifc<Stream>::strand.post([self,this,ec](){
+      error_code_t e(ec);
+      ifc<Stream>::stream.lowest_layer().cancel(e);
+    });
   }
   const std::string & getSNI() {
     std::unique_lock<std::mutex> lock(_sni_().mutex);
@@ -141,7 +170,7 @@ public:
 };
 //============================================
 interface_ptr get(::asio::ip::tcp::socket & socket){
-  interface_ptr ptr(new ifc_raw<::asio::ip::tcp::socket>(socket));
+  interface_ptr ptr(std::make_shared<ifc_raw<::asio::ip::tcp::socket>>(socket));
   ptr->info[_socket_type_]=_tcp_;
   ptr->info[_socket_enc_]=_0_;
   try {
@@ -157,7 +186,7 @@ interface_ptr get(::asio::ip::tcp::socket & socket){
   return(ptr);
 }
 interface_ptr get(::asio::local::stream_protocol::socket & socket){
-  interface_ptr ptr(new ifc_raw<::asio::local::stream_protocol::socket>(socket));
+  interface_ptr ptr(std::make_shared<ifc_raw<::asio::local::stream_protocol::socket>>(socket));
   ptr->info[_socket_type_]=_local_;
   ptr->info[_socket_enc_]=_0_;
   try {
@@ -174,7 +203,7 @@ interface_ptr get(::asio::local::stream_protocol::socket & socket){
 }
 interface_ptr get(::asio::ip::tcp::socket & socket,context_ptr & context,const std::string & setSNI){
   if (context){
-    interface_ptr ptr(new ifc_ssl<::asio::ssl::stream<::asio::ip::tcp::socket>>(socket,*context,setSNI));
+    interface_ptr ptr(std::make_shared<ifc_ssl<::asio::ssl::stream<::asio::ip::tcp::socket>>>(socket,*context,setSNI));
     ptr->info[_socket_type_]=_tcp_;
     ptr->info[_socket_enc_]=_1_;
     try {
@@ -193,7 +222,7 @@ interface_ptr get(::asio::ip::tcp::socket & socket,context_ptr & context,const s
 }
 interface_ptr get(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI){
   if (context){
-    interface_ptr ptr(new ifc_ssl<::asio::ssl::stream<::asio::local::stream_protocol::socket>>(socket,*context,setSNI));
+    interface_ptr ptr(std::make_shared<ifc_ssl<::asio::ssl::stream<::asio::local::stream_protocol::socket>>>(socket,*context,setSNI));
     ptr->info[_socket_type_]=_local_;
     ptr->info[_socket_enc_]=_1_;
     try {
