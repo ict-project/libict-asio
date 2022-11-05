@@ -4,6 +4,7 @@ This code implements a simple wrapper for Asio C++ Library.
 
 See:
 * [asio](source/asio.md) for more details about basic Asio functions and objects;
+* [timer](source/timer.md) for more details about basic timer objects;
 * [resolver](source/resolver.md) for more details about async DNS resolving;
 * [connection](source/connection.md) for more details about connection interface;
 * [connector](source/connector.md) for more details about connection handling (server and client side).

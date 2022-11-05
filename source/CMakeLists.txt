@@ -40,6 +40,7 @@ set(CMAKE_SOURCE_FILES
   connection-string.cpp
   connection-message.cpp
   connector.cpp
+  timer.cpp
 )
 
 include_directories(BEFORE SYSTEM ${OPENSSL_INCLUDE_DIR})
@@ -95,6 +96,16 @@ add_test(NAME ict-connection-tc1 COMMAND ${PROJECT_NAME}-test ict connection tc1
 add_test(NAME ict-connection_string-tc1 COMMAND ${PROJECT_NAME}-test ict connection_string tc1)
 add_test(NAME ict-connection_message-tc1 COMMAND ${PROJECT_NAME}-test ict connection_message tc1)
 add_test(NAME ict-connector-tc1 COMMAND ${PROJECT_NAME}-test ict connector tc1)
+add_test(NAME ict-timer-tc1 COMMAND ${PROJECT_NAME}-test ict timer tc1)
+add_test(NAME ict-timer-tc2 COMMAND ${PROJECT_NAME}-test ict timer tc2)
+add_test(NAME ict-timer-tc3 COMMAND ${PROJECT_NAME}-test ict timer tc3)
+add_test(NAME ict-timer-tc4 COMMAND ${PROJECT_NAME}-test ict timer tc4)
+add_test(NAME ict-timer-tc5 COMMAND ${PROJECT_NAME}-test ict timer tc5)
+add_test(NAME ict-timer-tc6 COMMAND ${PROJECT_NAME}-test ict timer tc6)
+add_test(NAME ict-timer-tc7 COMMAND ${PROJECT_NAME}-test ict timer tc7)
+add_test(NAME ict-timer-tc8 COMMAND ${PROJECT_NAME}-test ict timer tc8)
+add_test(NAME ict-timer-tc9 COMMAND ${PROJECT_NAME}-test ict timer tc9)
+add_test(NAME ict-timer-tc10 COMMAND ${PROJECT_NAME}-test ict timer tc10)
 
 ################################################################
 #set(CPACK_GENERATOR "TZ;TGZ;STGZ;DEB;RPM") # Linux
