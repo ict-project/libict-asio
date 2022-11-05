@@ -87,8 +87,9 @@ protected:
   bool ready=false;
   bool error=false;
   ict::asio::connection::context_ptr context;
+  ::asio::io_service::strand strand;
 public:
-  BasicConnector(const ict::asio::connection::context_ptr & c):context(c){
+  BasicConnector(const ict::asio::connection::context_ptr & c):context(c),strand(ict::asio::ioService()){
   }
   bool is_error() const{
     return(error);
@@ -160,37 +161,53 @@ private:
       }
     );
   }
-public:
-  ServerConnector(const ict::asio::connection::context_ptr & c):BasicConnector<Socket>(c),a(ict::asio::ioService()),s(ict::asio::ioService()){}
-  ~ServerConnector(){
-    close();
-  }
-  void close(){
-    a.close();
-    s.close();
+  void unlink_path(){
     if ((interface::info.at(_connector_type_)==_local_)&&(interface::info.at(_connector_server_)==_1_)) {
       if (interface::info.at(_connector_path_).size()) {
         unlink(interface::info.at(_connector_path_).c_str());
       }
     }
   }
+public:
+  ServerConnector(const ict::asio::connection::context_ptr & c):BasicConnector<Socket>(c),a(ict::asio::ioService()),s(ict::asio::ioService()){}
+  ~ServerConnector(){
+    unlink_path();
+  }
+  void close(){
+    auto self(interface::enable_shared_t::shared_from_this());
+    BasicConnector<Socket>::strand.post([this,self](){
+      a.close();
+      s.close();
+      unlink_path();
+    });
+  }
   bool is_open() const{
     return(BasicConnector<Socket>::error?false:a.is_open());
   }
   void cancel(){
-    a.cancel();
+    auto self(interface::enable_shared_t::shared_from_this());
+    BasicConnector<Socket>::strand.post([this,self](){
+      a.cancel();
+    });
   }
   void cancel(error_code_t& ec){
-    a.cancel(ec);
+    auto self(interface::enable_shared_t::shared_from_this());
+    BasicConnector<Socket>::strand.post([this,self,ec](){
+      error_code_t e(ec);
+      a.cancel(e);
+    });
   }
   void async_connection(const ict::asio::connection::connection_handler_t & handler){
-    if (BasicConnector<Socket>::error) return;
-    if (BasicConnector<Socket>::ready){
-      accept(handler);
-    } else {
-      prepare(s,handler);
-      BasicConnector<Socket>::ready=true;
-    }
+    auto self(interface::enable_shared_t::shared_from_this());
+    BasicConnector<Socket>::strand.post([this,self,handler](){
+      if (BasicConnector<Socket>::error) return;
+      if (BasicConnector<Socket>::ready){
+        accept(handler);
+      } else {
+        prepare(s,handler);
+        BasicConnector<Socket>::ready=true;
+      }
+    });
   }
 };
 template <class Socket,class Endpoint> class ClientConnector: public BasicConnector<Socket> {
@@ -279,25 +296,36 @@ private:
   }
 public:
   ClientConnector(const ict::asio::connection::context_ptr & c):BasicConnector<Socket>(c),s(ict::asio::ioService()),t(ict::asio::ioService()){}
-  ~ClientConnector(){
-    close();
-  }
+  ~ClientConnector(){}
   void close(){
-    s.close();
+    auto self(interface::enable_shared_t::shared_from_this());
+    BasicConnector<Socket>::strand.post([this,self](){
+      s.close();
+    });
   }
   bool is_open() const{
     return(BasicConnector<Socket>::error?false:true);
   }
   void cancel(){
-    s.cancel();
+    auto self(interface::enable_shared_t::shared_from_this());
+      BasicConnector<Socket>::strand.post([this,self](){
+      s.cancel();
+    });
   }
   void cancel(error_code_t& ec){
-    s.cancel(ec);
+    auto self(interface::enable_shared_t::shared_from_this());
+    BasicConnector<Socket>::strand.post([this,self,ec](){
+      error_code_t e(ec);
+      s.cancel(e);
+    });
   }
   void async_connection(const ict::asio::connection::connection_handler_t &handler){
-    BasicConnector<Socket>::error=false;
-    prepare(s,handler);
-    BasicConnector<Socket>::ready=true;
+    auto self(interface::enable_shared_t::shared_from_this());
+    BasicConnector<Socket>::strand.post([this,self,handler](){
+      BasicConnector<Socket>::error=false;
+      prepare(s,handler);
+      BasicConnector<Socket>::ready=true;
+    });
   }
 };
 //============================================
@@ -308,9 +336,9 @@ interface_ptr get(const std::string & host,const std::string & port,bool server)
 interface_ptr get(const std::string & host,const std::string & port,const ict::asio::connection::context_ptr & context,bool server,const std::string & setSNI){
   interface_ptr ptr;
   if (server){
-    ptr.reset(new ServerConnector<::asio::ip::tcp::socket,::asio::ip::tcp::acceptor>(context));
+    ptr=std::make_shared<ServerConnector<::asio::ip::tcp::socket,::asio::ip::tcp::acceptor>>(context);
   } else {
-    ptr.reset(new ClientConnector<::asio::ip::tcp::socket,ict::asio::resolver::tcp_endpoint_info_ptr>(context));
+    ptr=std::make_shared<ClientConnector<::asio::ip::tcp::socket,ict::asio::resolver::tcp_endpoint_info_ptr>>(context);
   }
   ptr->info[_connector_type_]=_tcp_;
   ptr->info[_connector_host_]=host;
@@ -327,9 +355,9 @@ interface_ptr get(const std::string & path,bool server){
 interface_ptr get(const std::string & path,const ict::asio::connection::context_ptr & context,bool server,const std::string & setSNI){
   interface_ptr ptr;
   if (server){
-    ptr.reset(new ServerConnector<::asio::local::stream_protocol::socket,::asio::local::stream_protocol::acceptor>(context));
+    ptr=std::make_shared<ServerConnector<::asio::local::stream_protocol::socket,::asio::local::stream_protocol::acceptor>>(context);
   } else {
-    ptr.reset(new ClientConnector<::asio::local::stream_protocol::socket,ict::asio::resolver::stream_endpoint_info_ptr>(context));
+    ptr=std::make_shared<ClientConnector<::asio::local::stream_protocol::socket,ict::asio::resolver::stream_endpoint_info_ptr>>(context);
   }
   ptr->info[_connector_type_]=_local_;
   ptr->info[_connector_host_]=_empty_;
