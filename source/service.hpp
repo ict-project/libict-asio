@@ -1,5 +1,5 @@
 //! @file
-//! @brief ASIO module - Source file.
+//! @brief ASIO service module - header file.
 //! @author Mariusz Ornowski (mariusz.ornowski@ict-project.pl)
 //! @date 2020-2022
 //! @copyright ICT-Project Mariusz Ornowski (ict-project.pl)
@@ -32,91 +32,16 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
+#ifndef _ASIO_SERVICE_HEADER
+#define _ASIO_SERVICE_HEADER
 //============================================
-#include <vector>
-#include <memory>
-#include <thread>
-#include <asio.hpp>
-#include <asio/ssl.hpp>
-#include "asio.hpp"
-#include "service.hpp"
+#include <asio/io_service.hpp>
 //============================================
 namespace ict { namespace asio {
 //============================================
-typedef std::vector<std::thread> vector_thread_t;
-typedef std::unique_ptr<vector_thread_t> vector_thread_ptr;
-//============================================
-vector_thread_ptr & ioThreads(){
-  static vector_thread_ptr ptr;
-  return(ptr);
-}
-void ioSignal(const signal_handler_t & handler){
-  static ::asio::signal_set signals(ioService(),SIGINT,SIGTERM);
-  signals.clear();
-  signals.async_wait([handler](const ::asio::error_code& error,int signal_number){
-    if (!error) {
-      switch(signal_number){
-        case SIGINT: case SIGTERM:{
-          if (handler) handler(error,signal_number);
-        } break;
-      }
-    }
-  });
-}
-void ioSignal(){
-  ioSignal([](const ::asio::error_code& error,int signal_number){
-    ioService().stop();
-  });
-}
-void ioRun(){
-  ioRun([]{
-    ioService().run();
-  });
-}
-void ioRun(const std::function<void(void)> &f){
-  static const unsigned int t(std::thread::hardware_concurrency());
-  if (!ioThreads()){
-    ioService().restart();
-    ioThreads().reset(new vector_thread_t);
-    for (;ioThreads()->size()<t;){
-      ioThreads()->emplace_back(f);
-    }
-  }
-}
-void ioJoin(){
-  unsigned int t(0);
-  if (ioThreads()) {
-    for(vector_thread_t::iterator it=ioThreads()->begin();it!=ioThreads()->end();++it){
-      it->join();
-      ++t;
-    }
-    ioThreads().reset(nullptr);
-  }
-}
-void ioRunJoin(){
-  ioRun();
-  ioJoin();
-}
-void ioRunJoin(const std::function<void(void)> &f){
-  ioRun(f);
-  ioJoin();
-}
-void ioStop(){
-  ioService().stop();
-}
+//! Dostęp do ::asio::io_service
+::asio::io_service & ioService();
 //============================================
 }}
-//============================================
-#ifdef ENABLE_TESTING
-#include "test.hpp"
-REGISTER_TEST(asio,tc1){
-  ict::asio::ioSignal();
-  ict::asio::ioRun();
-  ict::asio::ioService().post([](){
-    ict::asio::ioService().stop();
-  });
-  ict::asio::ioJoin();
-  return(0);
-}
-#endif
 //===========================================
+#endif

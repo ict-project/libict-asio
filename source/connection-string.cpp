@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
 //============================================
 #include "connection-string.hpp"
+#include "service.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
 //============================================
@@ -107,6 +108,7 @@ string_ptr getString(::asio::local::stream_protocol::socket & socket,context_ptr
 //============================================
 #ifdef ENABLE_TESTING
 #include "test.hpp"
+#include "asio.hpp"
 #include "connector.hpp"
 
 static const std::string server_example="'a','b','c','d'";

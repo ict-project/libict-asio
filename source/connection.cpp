@@ -39,6 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <asio.hpp>
 #include <asio/ssl.hpp>
+#include "service.hpp"
 #include "connection.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
@@ -244,6 +245,7 @@ interface_ptr get(::asio::local::stream_protocol::socket & socket,context_ptr & 
 //============================================
 #ifdef ENABLE_TESTING
 #include "test.hpp"
+#include "asio.hpp"
 #include "connector.hpp"
 static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio::connection::context_ptr & c_ctx){
   ict::asio::ioSignal();

@@ -42,7 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asio/ip/tcp.hpp>
 #include <asio/local/stream_protocol.hpp>
 #include <asio/ssl/context.hpp>
-#include "asio.hpp"
+#include "types.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
 //===========================================

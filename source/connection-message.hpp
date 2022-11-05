@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //============================================
 #include <string>
 #include <vector>
-#include "asio.hpp"
+#include "types.hpp"
 #include "connection.hpp"
 #include "connection-string.hpp"
 //============================================

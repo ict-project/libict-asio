@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asio/strand.hpp>
 #include <asio/system_timer.hpp>
 #include <asio/steady_timer.hpp>
-#include "asio.hpp"
+#include "service.hpp"
 #include "timer.hpp"
 //============================================
 namespace ict { namespace asio { namespace timer {
@@ -278,6 +278,7 @@ void Timer::async_wait(const handler_t & h){
 //============================================
 #ifdef ENABLE_TESTING
 #include "test.hpp"
+#include "asio.hpp"
 #include <atomic>
 REGISTER_TEST(timer,tc1){
     ict::asio::timer::time_point_t tp;

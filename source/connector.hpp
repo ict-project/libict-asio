@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _ASIO_CONNECTOR_HEADER
 #define _ASIO_CONNECTOR_HEADER
 //============================================
-#include "asio.hpp"
+#include "types.hpp"
 #include "connection.hpp"
 //============================================
 namespace ict { namespace asio { namespace connector {

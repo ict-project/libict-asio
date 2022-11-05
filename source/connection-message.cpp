@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
 //============================================
 #include "connection-message.hpp"
+#include "service.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
 //============================================
@@ -693,6 +694,7 @@ message_ptr getMessage(::asio::local::stream_protocol::socket & socket,context_p
 //============================================
 #ifdef ENABLE_TESTING
 #include "test.hpp"
+#include "asio.hpp"
 #include "connector.hpp"
 
 static const ict::asio::connection::message::response_headers_t server_example={

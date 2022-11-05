@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //============================================
 #include <asio.hpp>
 #include <asio/ssl.hpp>
+#include "service.hpp"
 #include "connector.hpp"
 #include "resolver.hpp"
 //============================================
@@ -372,6 +373,7 @@ interface_ptr get(const std::string & path,const ict::asio::connection::context_
 //============================================
 #ifdef ENABLE_TESTING
 #include "test.hpp"
+#include "asio.hpp"
 #include <atomic>
 REGISTER_TEST(connector,tc1){
   ict::asio::ioSignal();

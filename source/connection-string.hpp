@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _CONNECTION_STRING_HEADER
 //============================================
 #include <string>
-#include "asio.hpp"
+#include "types.hpp"
 #include "connection.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {

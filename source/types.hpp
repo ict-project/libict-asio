@@ -1,10 +1,10 @@
 //! @file
-//! @brief ASIO module - header file.
+//! @brief Types - header file.
 //! @author Mariusz Ornowski (mariusz.ornowski@ict-project.pl)
-//! @date 2020-2022
+//! @date 2022
 //! @copyright ICT-Project Mariusz Ornowski (ict-project.pl)
 /* **************************************************************
-Copyright (c) 2020-2022, ICT-Project Mariusz Ornowski (ict-project.pl)
+Copyright (c) 2022, ICT-Project Mariusz Ornowski (ict-project.pl)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,36 +32,19 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
-#ifndef _ASIO__HEADER
-#define _ASIO__HEADER
+#ifndef _ASIO_TYPES__HEADER
+#define _ASIO_TYPES__HEADER
 //============================================
-#include <functional>
 #include <map>
 #include <string>
-#include "types.hpp"
+#include <system_error>
 //============================================
 namespace ict { namespace asio {
-//===========================================
-//! Handler do obsługi sygnałów
-//! @param ec Kod błędu
-//! @param signal Numer sygnału
-typedef std::function<void(const error_code_t&,int)> signal_handler_t;
-//===========================================
-//! Ustawienie obsługi sygnałów
-//! @param handler Funkcja do wykonania
-void ioSignal(const signal_handler_t & handler);
-//! Ustawienie obsługi sygnałów
-void ioSignal();
-//! Uruchamia ::asio::io_service::run() w wielu osobnych wątkach
-void ioRun();
-void ioRun(const std::function<void(void)> &f);
-//! Oczekuje na zakończenie ::asio::io_service::run() w wielu osobnych wątkach
-void ioJoin();
-//! Uruchamia i oczekuje na zakończenie ::asio::io_service::run() w wielu osobnych wątkach
-void ioRunJoin();
-void ioRunJoin(const std::function<void(void)> &f);
-//! Wykonuje ::asio::io_service::stop()
-void ioStop();
+//============================================
+//! Typ - metadane obiektu
+typedef std::map<std::string,std::string> map_info_t;
+//! Kod błędu
+typedef std::error_code error_code_t;
 //============================================
 }}
 //===========================================

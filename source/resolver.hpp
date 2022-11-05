@@ -39,14 +39,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <functional>
 #include <vector>
 #include <string>
-#include <system_error>
 #include <asio/ip/tcp.hpp>
 #include <asio/local/stream_protocol.hpp>
+#include "types.hpp"
 //============================================
 namespace ict { namespace asio { namespace resolver {
 //===========================================
-//! Kod błędu
-typedef std::error_code error_code_t;
 //! Lista endpointów dla TCP
 typedef std::vector<::asio::ip::tcp::endpoint> tcp_endpoint_t;
 //! Informacja o endpointach dla TCP

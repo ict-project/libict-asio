@@ -34,6 +34,7 @@ add_custom_command(
 
 set(CMAKE_SOURCE_FILES 
   info.cpp
+  service.cpp
   asio.cpp
   resolver.cpp
   connection.cpp

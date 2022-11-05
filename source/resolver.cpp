@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asio.hpp>
 #include <asio/ssl.hpp>
 #include "resolver.hpp"
-#include "asio.hpp"
+#include "service.hpp"
 //============================================
 namespace ict { namespace asio { namespace resolver {
 //============================================
@@ -151,11 +151,12 @@ void get(const std::string & path,const stream_handler_t & handler){
 //============================================
 #ifdef ENABLE_TESTING
 #include "test.hpp"
+#include "asio.hpp"
 REGISTER_TEST(resolver,tc1){
   bool err=true;
   ict::asio::ioSignal();
   ict::asio::ioRun();
-  ict::asio::resolver::get("","80",[&](const ict::asio::resolver::tcp_endpoint_info_ptr& te,const ict::asio::resolver::error_code_t& ec){
+  ict::asio::resolver::get("","80",[&](const ict::asio::resolver::tcp_endpoint_info_ptr& te,const ict::asio::error_code_t& ec){
     std::cout<<"ict::asio::resolver::get - ";
     if (ec){
       err=true;
@@ -176,7 +177,7 @@ REGISTER_TEST(resolver,tc2){
   bool err=true;
   ict::asio::ioSignal();
   ict::asio::ioRun();
-  ict::asio::resolver::get("wp.pl","80",[&](const ict::asio::resolver::tcp_endpoint_info_ptr& te,const ict::asio::resolver::error_code_t& ec){
+  ict::asio::resolver::get("wp.pl","80",[&](const ict::asio::resolver::tcp_endpoint_info_ptr& te,const ict::asio::error_code_t& ec){
     std::cout<<"ict::asio::resolver::get - ";
     if (ec){
       err=true;
@@ -197,7 +198,7 @@ REGISTER_TEST(resolver,tc3){
   bool err=true;
   ict::asio::ioSignal();
   ict::asio::ioRun();
-  ict::asio::resolver::get("/tmp/test.stream",[&](const ict::asio::resolver::stream_endpoint_info_ptr& se,const ict::asio::resolver::error_code_t& ec){
+  ict::asio::resolver::get("/tmp/test.stream",[&](const ict::asio::resolver::stream_endpoint_info_ptr& se,const ict::asio::error_code_t& ec){
     std::cout<<"ict::asio::resolver::get - ";
     if (ec){
       err=true;
