@@ -36,8 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _ASIO__HEADER
 //============================================
 #include <functional>
-#include <map>
-#include <string>
 #include "types.hpp"
 //============================================
 namespace ict { namespace asio {

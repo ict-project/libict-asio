@@ -109,7 +109,7 @@ void ioStop(){
 REGISTER_TEST(asio,tc1){
   ict::asio::ioSignal();
   ict::asio::ioRun();
-  ict::asio::ioService().post([](){
+  ict::asio::ioServicePost([](){
     ict::asio::ioService().stop();
   });
   ict::asio::ioJoin();
