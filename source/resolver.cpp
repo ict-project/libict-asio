@@ -37,9 +37,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <chrono>
 #include <asio.hpp>
 #include <asio/ssl.hpp>
-#include "resolver.hpp"
 #include "asio.hpp"
-#include "service.hpp"
+#include "resolver.h"
+#include "service.h"
 //============================================
 namespace ict { namespace asio { namespace resolver {
 //============================================

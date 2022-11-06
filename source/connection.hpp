@@ -1,11 +1,10 @@
 //! @file
 //! @brief ASIO connection module - header file.
 //! @author Mariusz Ornowski (mariusz.ornowski@ict-project.pl)
-//! @version 2.0
-//! @date 2020-2021
+//! @date 2020-2022
 //! @copyright ICT-Project Mariusz Ornowski (ict-project.pl)
 /* **************************************************************
-Copyright (c) 2020-2021, ICT-Project Mariusz Ornowski (ict-project.pl)
+Copyright (c) 2020-2022, ICT-Project Mariusz Ornowski (ict-project.pl)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,15 +32,14 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
-#ifndef _ASIO_CONNECTION_HEADER
-#define _ASIO_CONNECTION_HEADER
+#ifndef _ASIO_CONNECTION_HEADER_HPP
+#define _ASIO_CONNECTION_HEADER_HPP
 //============================================
 #include <vector>
 #include <string>
 #include <memory>
-#include <asio/ip/tcp.hpp>
-#include <asio/local/stream_protocol.hpp>
-#include <asio/ssl/context.hpp>
+#include <openssl/conf.h>
+#include <openssl/ssl.h>
 #include "types.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
@@ -98,32 +96,11 @@ public:
 //! Wskaźnik do interfejsu do obsługi połączeń.
 typedef std::shared_ptr<interface> interface_ptr;
 //! Wskaźnik do kontekstu połączenia SSL
-typedef std::shared_ptr<::asio::ssl::context> context_ptr;
+typedef SSL_CTX * context_ptr;
 //! Handler do obsługi nowych połączeń
 //! @param ec Kod błędu
 //! @param interface  Wskaźnik do interfejsu do obsługi połączeń.
 typedef std::function<void(const error_code_t&,interface_ptr)> connection_handler_t;
-//===========================================
-//! Zwraca interfejs do obsługi połączenia (bez SSL).
-//! @param socket Gniazdo TCP.
-//! @returns Wskaźnik do interfejsu do obsługi połączenia.
-interface_ptr get(::asio::ip::tcp::socket & socket);
-//! Zwraca interfejs do obsługi połączenia (bez SSL).
-//! @param socket Gniazdo lokalne.
-//! @returns Wskaźnik do interfejsu do obsługi połączenia.
-interface_ptr get(::asio::local::stream_protocol::socket & socket);
-//! Zwraca interfejs do obsługi połączenia (z SSL).
-//! @param socket Gniazdo TCP.
-//! @param context Wskaźnik do kontekstu połączenia SSL.
-//! @param setSNI Ustawia nazwę serwera (SNI) - gdy połączenie jako klient.
-//! @returns Wskaźnik do interfejsu do obsługi połączenia.
-interface_ptr get(::asio::ip::tcp::socket & socket,context_ptr & context,const std::string & setSNI="");
-//! Zwraca interfejs do obsługi połączenia (z SSL).
-//! @param socket Gniazdo lokalne.
-//! @param context Wskaźnik do kontekstu połączenia SSL.
-//! @param setSNI Ustawia nazwę serwera (SNI) - gdy połączenie jako klient.
-//! @returns Wskaźnik do interfejsu do obsługi połączenia.
-interface_ptr get(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI="");
 //============================================
 }}}
 //===========================================

@@ -4,10 +4,6 @@ This module provides the interface that handling read/write on a conection (TCP 
 
 ## Basic interface (*connection.hpp*)
 
-In order to get a new connection interface one of following function should be used:
-* `ict::asio::connection::get(socket)` - Gets pointer (`std::shared_ptr`) to an interface to a connection for given socket (TCP o local stream).
-* `ict::asio::connection::get(socket,context,setSNI)` - Gets pointer (`std::shared_ptr`) to an interface to a connection for given socket (TCP o local stream) with SSL (for given context and SNI).
-
 The connection interface:
 ```c
 //! Closes the connection.
@@ -49,10 +45,7 @@ typedef std::vector<unsigned char> buffer_t;
 
 ## Interface with `std::string` buffer (*connection-string.hpp*)
 
-More advance version of the basic interface. In order to get a new connection interface (string) one of following function should be used:
-* `ict::asio::connection::getString(iface)` - Gets pointer (`std::shared_ptr`) to an interface (string) to a connection for given basic interface.
-* `ict::asio::connection::getString(socket)`  - Gets pointer (`std::shared_ptr`) to an interface (string) to a connection for given socket (TCP o local stream).
-* `ict::asio::connection::getString(socket,context,setSNI)`- Gets pointer (`std::shared_ptr`) to an interface (string) to a connection for given socket (TCP o local stream) with SSL (for given context and SNI).
+More advance version of the basic interface.
 
 The connection interface (string):
 ```c
@@ -71,10 +64,7 @@ void async_read_string(std::string & buffer,const handler_t &handler);
 
 ## Interface with message buffer (*connection-message.hpp*)
 
-More advance version of the string interface. In order to get a new connection interface (message) one of following function should be used:
-* `ict::asio::connection::getMessage(iface)` - Gets pointer (`std::shared_ptr`) to an interface (message) to a connection for given basic or string interface.
-* `ict::asio::connection::getMessage(socket)`  - Gets pointer (`std::shared_ptr`) to an interface (message) to a connection for given socket (TCP o local stream).
-* `ict::asio::connection::getMessage(socket,context,setSNI)`- Gets pointer (`std::shared_ptr`) to an interface (message) to a connection for given socket (TCP o local stream) with SSL (for given context and SNI).
+More advance version of the string interface.
 
 The connection interface (string):
 ```c

@@ -33,9 +33,9 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
 //============================================
-#include "connection-string.hpp"
 #include "asio.hpp"
-#include "service.hpp"
+#include "service.h"
+#include "connection-string.h"
 //============================================
 namespace ict { namespace asio { namespace connection {
 //============================================
@@ -225,7 +225,7 @@ static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio
   return(0);
 }
 REGISTER_TEST(connection_string,tc1){
-  ict::asio::connection::context_ptr ctx;
+  ict::asio::connection::context_ptr ctx=NULL;
   return(test__connection(ctx,ctx));
 }
 #endif

@@ -32,13 +32,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
-#ifndef _CONNECTION_MESSAGE_HEADER
-#define _CONNECTION_MESSAGE_HEADER
+#ifndef _CONNECTION_MESSAGE_HEADER_HPP
+#define _CONNECTION_MESSAGE_HEADER_HPP
 //============================================
 #include <string>
 #include <vector>
-#include "types.hpp"
-#include "connection.hpp"
 #include "connection-string.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
@@ -216,39 +214,6 @@ public:
 //===========================================
 //! Wskaźnik do interfejsu do obsługi połączeń.
 typedef std::shared_ptr<message> message_ptr;
-//============================================
-//! Zwraca interfejs do obsługi połączenia (message).
-//! @param iface Wskaźnik do interfejsu do obsługi połączenia (string).
-//! @returns Wskaźnik do interfejsu do obsługi połączenia (message).
-message_ptr get(string_ptr iface);
-//! Zwraca interfejs do obsługi połączenia (message).
-//! @param iface Wskaźnik do interfejsu do obsługi połączenia (podstawowy).
-//! @returns Wskaźnik do interfejsu do obsługi połączenia (message).
-message_ptr getMessage(interface_ptr iface);
-//! Zwraca interfejs do obsługi połączenia (message).
-//! @param iface Wskaźnik do interfejsu do obsługi połączenia (string).
-//! @returns Wskaźnik do interfejsu do obsługi połączenia (message).
-message_ptr getMessage(string_ptr iface);
-//! Zwraca interfejs (message) do obsługi połączenia (bez SSL).
-//! @param socket Gniazdo TCP.
-//! @returns Wskaźnik do interfejsu (message) do obsługi połączenia.
-message_ptr getMessage(::asio::ip::tcp::socket & socket);
-//! Zwraca interfejs (message) do obsługi połączenia (bez SSL).
-//! @param socket Gniazdo lokalne.
-//! @returns Wskaźnik do interfejsu (message) do obsługi połączenia.
-message_ptr getMessage(::asio::local::stream_protocol::socket & socket);
-//! Zwraca interfejs (message) do obsługi połączenia (z SSL).
-//! @param socket Gniazdo TCP.
-//! @param context Wskaźnik do kontekstu połączenia SSL.
-//! @param setSNI Ustawia nazwę serwera (SNI) - gdy połączenie jako klient.
-//! @returns Wskaźnik do interfejsu (message) do obsługi połączenia.
-message_ptr getMessage(::asio::ip::tcp::socket & socket,context_ptr & context,const std::string & setSNI="");
-//! Zwraca interfejs (message) do obsługi połączenia (z SSL).
-//! @param socket Gniazdo lokalne.
-//! @param context Wskaźnik do kontekstu połączenia SSL.
-//! @param setSNI Ustawia nazwę serwera (SNI) - gdy połączenie jako klient.
-//! @returns Wskaźnik do interfejsu (message) do obsługi połączenia.
-message_ptr getMessage(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI="");
 //============================================
 }}}
 //===========================================

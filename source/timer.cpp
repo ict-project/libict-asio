@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asio/strand.hpp>
 #include <asio/system_timer.hpp>
 #include <asio/steady_timer.hpp>
-#include "service.hpp"
+#include "service.h"
 #include "timer.hpp"
 //============================================
 namespace ict { namespace asio { namespace timer {

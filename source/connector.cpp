@@ -37,9 +37,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asio.hpp>
 #include <asio/ssl.hpp>
 #include "asio.hpp"
-#include "service.hpp"
 #include "connector.hpp"
-#include "resolver.hpp"
+#include "service.h"
+#include "resolver.h"
+#include "connection.h"
 //============================================
 namespace ict { namespace asio { namespace connector {
 //============================================
@@ -332,7 +333,7 @@ public:
 };
 //============================================
 interface_ptr get(const std::string & host,const std::string & port,bool server){
-  ict::asio::connection::context_ptr empty;
+  ict::asio::connection::context_ptr empty=NULL;
   return(get(host,port,empty,server));
 }
 interface_ptr get(const std::string & host,const std::string & port,const ict::asio::connection::context_ptr & context,bool server,const std::string & setSNI){
@@ -351,7 +352,7 @@ interface_ptr get(const std::string & host,const std::string & port,const ict::a
   return(ptr);
 }
 interface_ptr get(const std::string & path,bool server){
-  ict::asio::connection::context_ptr empty;
+  ict::asio::connection::context_ptr empty=NULL;
   return(get(path,empty,server));
 }
 interface_ptr get(const std::string & path,const ict::asio::connection::context_ptr & context,bool server,const std::string & setSNI){
@@ -380,9 +381,9 @@ REGISTER_TEST(connector,tc1){
   ict::asio::ioSignal();
   ict::asio::ioRun();
   {
-    std::atomic<int> k=8;
+    std::atomic<int> k=4;
     std::string port;
-    ict::asio::connection::context_ptr ctx(new ::asio::ssl::context(::asio::ssl::context::tls));
+    //ict::asio::connection::context_ptr ctx(new ::asio::ssl::context(::asio::ssl::context::tls));
     ::asio::steady_timer t(ict::asio::ioService());
     srand(time(NULL));
 
@@ -403,7 +404,7 @@ REGISTER_TEST(connector,tc1){
     ict::asio::connector::interface_ptr s2(ict::asio::connector::get("/tmp/test-connector-"+port,true));
     ict::asio::connector::interface_ptr c2(ict::asio::connector::get("/tmp/test-connector-"+port,false));
 
-    port="300"+std::to_string(rand()%90+10);
+    /*port="300"+std::to_string(rand()%90+10);
     std::cout<<port<<std::endl;
     ict::asio::connector::interface_ptr s3(ict::asio::connector::get("localhost",port,ctx,true));
     ict::asio::connector::interface_ptr c3(ict::asio::connector::get("localhost",port,ctx,false,"c3"));
@@ -411,7 +412,7 @@ REGISTER_TEST(connector,tc1){
     port="300"+std::to_string(rand()%90+10);
     std::cout<<port<<std::endl;
     ict::asio::connector::interface_ptr s4(ict::asio::connector::get("/tmp/test-connector-"+port,ctx,true));
-    ict::asio::connector::interface_ptr c4(ict::asio::connector::get("/tmp/test-connector-"+port,ctx,false,"c4"));
+    ict::asio::connector::interface_ptr c4(ict::asio::connector::get("/tmp/test-connector-"+port,ctx,false,"c4"));*/
     
     s1->async_connection([&k](const ict::asio::error_code_t& ec,ict::asio::connection::interface_ptr ptr){
       if (ec){
@@ -433,7 +434,7 @@ REGISTER_TEST(connector,tc1){
       if (ptr) std::cout<<"s2 "<<k<<" "<<ptr->getInfo()<<std::endl;
       if (k<=0) ict::asio::ioService().stop();
     });
-    s3->async_connection([&k](const ict::asio::error_code_t& ec,ict::asio::connection::interface_ptr ptr){
+    /*s3->async_connection([&k](const ict::asio::error_code_t& ec,ict::asio::connection::interface_ptr ptr){
       if (ec){
         k=-300;
         std::cerr<<__LINE__<<"|"<<ec<<"|"<<ec.message()<<std::endl;
@@ -452,7 +453,7 @@ REGISTER_TEST(connector,tc1){
       }
       if (ptr) std::cout<<"s4 "<<k<<" "<<ptr->getInfo()<<" "<<ptr->getSNI()<<std::endl;
       if (k<=0) ict::asio::ioService().stop();
-    });
+    });*/
     usleep(5000);
     c1->async_connection([&k](const ict::asio::error_code_t& ec,ict::asio::connection::interface_ptr ptr){
       if (ec){
@@ -472,6 +473,7 @@ REGISTER_TEST(connector,tc1){
       }
     });
     usleep(5000);
+    /*
     c3->async_connection([&k](const ict::asio::error_code_t& ec,ict::asio::connection::interface_ptr ptr){
       if (ec){
         k=-700;
@@ -488,7 +490,7 @@ REGISTER_TEST(connector,tc1){
       } else {
         k--;
       }
-    });
+    });*/
 
     ict::asio::ioJoin();
     if (k) return(k);

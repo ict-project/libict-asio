@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asio.hpp>
 #include <asio/ssl.hpp>
 #include "asio.hpp"
-#include "service.hpp"
+#include "service.h"
 //============================================
 namespace ict { namespace asio {
 //============================================

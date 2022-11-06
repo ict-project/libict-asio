@@ -39,8 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <asio.hpp>
 #include <asio/ssl.hpp>
-#include "service.hpp"
-#include "connection.hpp"
+#include <asio/ssl/context.hpp>
+#include "service.h"
+#include "connection.h"
 //============================================
 namespace ict { namespace asio { namespace connection {
 //============================================
@@ -133,11 +134,13 @@ static int sni_callback(SSL * ssl,int * i, void * arg){
   return(0);
 }
 template <class Stream> class ifc_ssl : public ifc<Stream>{
+private:
+  ::asio::ssl::context context;
 public:
-  template<class Socket> ifc_ssl(Socket & s,::asio::ssl::context & c,const std::string & sni):ifc<Stream>(s,c){
+  template<class Socket> ifc_ssl(Socket & s,const context_ptr & c,const std::string & sni):context(c),ifc<Stream>(s,context){
     std::unique_lock<std::mutex> lock(_sni_().mutex);
     if (sni.size()) ::SSL_set_tlsext_host_name(ifc<Stream>::stream.native_handle(),sni.c_str());
-    ::SSL_CTX_set_tlsext_servername_callback(c.native_handle(),sni_callback);
+    ::SSL_CTX_set_tlsext_servername_callback(c,sni_callback);
     _sni_().map[ifc<Stream>::stream.native_handle()].assign(sni);
   }
   ~ifc_ssl(){
@@ -208,9 +211,9 @@ interface_ptr get(::asio::local::stream_protocol::socket & socket){
   }
   return(ptr);
 }
-interface_ptr get(::asio::ip::tcp::socket & socket,context_ptr & context,const std::string & setSNI){
+interface_ptr get(::asio::ip::tcp::socket & socket,const context_ptr & context,const std::string & setSNI){
   if (context){
-    interface_ptr ptr(std::make_shared<ifc_ssl<::asio::ssl::stream<::asio::ip::tcp::socket>>>(socket,*context,setSNI));
+    interface_ptr ptr(std::make_shared<ifc_ssl<::asio::ssl::stream<::asio::ip::tcp::socket>>>(socket,context,setSNI));
     ptr->info[_socket_type_]=_tcp_;
     ptr->info[_socket_enc_]=_1_;
     try {
@@ -227,9 +230,9 @@ interface_ptr get(::asio::ip::tcp::socket & socket,context_ptr & context,const s
   }
   return(get(socket));
 }
-interface_ptr get(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI){
+interface_ptr get(::asio::local::stream_protocol::socket & socket,const context_ptr & context,const std::string & setSNI){
   if (context){
-    interface_ptr ptr(std::make_shared<ifc_ssl<::asio::ssl::stream<::asio::local::stream_protocol::socket>>>(socket,*context,setSNI));
+    interface_ptr ptr(std::make_shared<ifc_ssl<::asio::ssl::stream<::asio::local::stream_protocol::socket>>>(socket,context,setSNI));
     ptr->info[_socket_type_]=_local_;
     ptr->info[_socket_enc_]=_1_;
     try {
@@ -368,7 +371,7 @@ static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio
   return(0);
 }
 REGISTER_TEST(connection,tc1){
-  ict::asio::connection::context_ptr ctx;
+  ict::asio::connection::context_ptr ctx=NULL;
   return(test__connection(ctx,ctx));
 }
 #endif

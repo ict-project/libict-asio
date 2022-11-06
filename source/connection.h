@@ -1,10 +1,10 @@
 //! @file
-//! @brief Connection (string) module - header file.
+//! @brief ASIO connection module - header file.
 //! @author Mariusz Ornowski (mariusz.ornowski@ict-project.pl)
-//! @date 2021-2022
+//! @date 2020-2022
 //! @copyright ICT-Project Mariusz Ornowski (ict-project.pl)
 /* **************************************************************
-Copyright (c) 2021-2022, ICT-Project Mariusz Ornowski (ict-project.pl)
+Copyright (c) 2020-2022, ICT-Project Mariusz Ornowski (ict-project.pl)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,55 +32,35 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
-#ifndef _CONNECTION_STRING_HEADER_HPP
-#define _CONNECTION_STRING_HEADER_HPP
+#ifndef _ASIO_CONNECTION_HEADER_H
+#define _ASIO_CONNECTION_HEADER_H
 //============================================
-#include <string>
+#include <asio/ip/tcp.hpp>
+#include <asio/local/stream_protocol.hpp>
 #include "connection.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
 //===========================================
-class string : public std::enable_shared_from_this<string>{
-private:
-    //! Bufor do odczytu danych.
-    ict::asio::connection::interface::buffer_t read;
-    //! Bufor do zapisu danych.
-    ict::asio::connection::interface::buffer_t write;
-public:
-    //! Typ pomocniczy do generowania wskaźnika.
-    typedef  std::enable_shared_from_this<string> enable_shared_t;
-    //! Typ - Funkcja do obsługi zapisu lub odczytu.
-    typedef std::function<void(const ict::asio::error_code_t&)> handler_t;
-    //! Interfejs połączenia
-    interface_ptr connection;
-public:
-    //!
-    //! @brief Konstruktor.
-    //! 
-    //! @param i Wskaźnik do podstawowego interfejsu.
-    //! 
-    string(const interface_ptr & i):connection(i){}
-    //! 
-    //! @brief Funkcja do asynchronicznego zapisu.
-    //! 
-    //! @param buffer Bufor zapisu.
-    //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
-    //! 
-    void async_write_string(std::string & buffer,const handler_t &handler);
-    //! 
-    //! @brief Funkcja do asynchronicznego odczytu.
-    //! 
-    //! @param buffer Bufor odczytu.
-    //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
-    //! 
-    void async_read_string(std::string & buffer,const handler_t &handler);
-    //! Dodaje zadanie do wykonania w ramach ::asio::strand
-    //! @param handler Zadanie do wykonania.
-    void post(const asio_handler_t &handler);
-};
-//===========================================
-//! Wskaźnik do interfejsu do obsługi połączeń.
-typedef std::shared_ptr<string> string_ptr;
+//! Zwraca interfejs do obsługi połączenia (bez SSL).
+//! @param socket Gniazdo TCP.
+//! @returns Wskaźnik do interfejsu do obsługi połączenia.
+interface_ptr get(::asio::ip::tcp::socket & socket);
+//! Zwraca interfejs do obsługi połączenia (bez SSL).
+//! @param socket Gniazdo lokalne.
+//! @returns Wskaźnik do interfejsu do obsługi połączenia.
+interface_ptr get(::asio::local::stream_protocol::socket & socket);
+//! Zwraca interfejs do obsługi połączenia (z SSL).
+//! @param socket Gniazdo TCP.
+//! @param context Wskaźnik do kontekstu połączenia SSL.
+//! @param setSNI Ustawia nazwę serwera (SNI) - gdy połączenie jako klient.
+//! @returns Wskaźnik do interfejsu do obsługi połączenia.
+interface_ptr get(::asio::ip::tcp::socket & socket,const context_ptr & context,const std::string & setSNI="");
+//! Zwraca interfejs do obsługi połączenia (z SSL).
+//! @param socket Gniazdo lokalne.
+//! @param context Wskaźnik do kontekstu połączenia SSL.
+//! @param setSNI Ustawia nazwę serwera (SNI) - gdy połączenie jako klient.
+//! @returns Wskaźnik do interfejsu do obsługi połączenia.
+interface_ptr get(::asio::local::stream_protocol::socket & socket,const context_ptr & context,const std::string & setSNI="");
 //============================================
 }}}
 //===========================================
