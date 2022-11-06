@@ -1,11 +1,10 @@
 //! @file
 //! @brief Connection (string) module - Source file.
 //! @author Mariusz Ornowski (mariusz.ornowski@ict-project.pl)
-//! @version 1.0
-//! @date 2021
+//! @date 2021-2022
 //! @copyright ICT-Project Mariusz Ornowski (ict-project.pl)
 /* **************************************************************
-Copyright (c) 2021, ICT-Project Mariusz Ornowski (ict-project.pl)
+Copyright (c) 2021-2022, ICT-Project Mariusz Ornowski (ict-project.pl)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,7 +42,7 @@ static const std::size_t max(0x10000);
 void string::async_write_string(std::string & buffer,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (buffer.empty()){
-        ict::asio::ioService().post([handler](){
+        ict::asio::ioService().post([self,handler](){
             ict::asio::error_code_t ec(ENODATA,std::generic_category());
             handler(ec);
         });
@@ -57,7 +56,7 @@ void string::async_write_string(std::string & buffer,const handler_t &handler){
             handler(ec);
         });
     } else {
-        ict::asio::ioService().post([handler](){
+        ict::asio::ioService().post([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });
@@ -66,7 +65,7 @@ void string::async_write_string(std::string & buffer,const handler_t &handler){
 void string::async_read_string(std::string & buffer,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (buffer.max_size()<(buffer.size()+max)){
-        ict::asio::ioService().post([handler](){
+        ict::asio::ioService().post([self,handler](){
             ict::asio::error_code_t ec(ENOBUFS,std::generic_category());
             handler(ec);
         });
@@ -79,14 +78,14 @@ void string::async_read_string(std::string & buffer,const handler_t &handler){
             handler(ec);
         });
     } else {
-        ict::asio::ioService().post([handler](){
+        ict::asio::ioService().post([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });
     }
 }
 string_ptr get(interface_ptr iface){
-    return string_ptr(new string(iface));
+    return string_ptr(std::make_shared<string>(iface));
 }
 string_ptr getString(interface_ptr iface){
     return get(iface);
