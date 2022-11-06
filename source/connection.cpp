@@ -80,10 +80,7 @@ public:
     });
   }
   void post(const asio_handler_t &handler){
-    auto self(interface::enable_shared_t::shared_from_this());
-    strand.post([self,handler](){
-      handler();
-    });
+    strand.post(handler);
   }
 };
 template <class Stream> class ifc_raw : public ifc<Stream>{

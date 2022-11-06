@@ -706,11 +706,8 @@ void message::async_read_response_headers(response_headers_t & response,const ha
     });
 }
 void message::post(const asio_handler_t &handler){
-  auto self(enable_shared_t::shared_from_this());
   if (connection){
-    connection->post([self,handler](){
-      handler();
-    });
+    connection->post(handler);
   }
 }
 message_ptr get(string_ptr iface){

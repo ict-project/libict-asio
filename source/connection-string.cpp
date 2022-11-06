@@ -90,11 +90,8 @@ void string::async_read_string(std::string & buffer,const handler_t &handler){
     }
 }
 void string::post(const asio_handler_t &handler){
-  auto self(enable_shared_t::shared_from_this());
   if (connection){
-    connection->post([self,handler](){
-      handler();
-    });
+    connection->post(handler);
   }
 }
 string_ptr get(interface_ptr iface){
