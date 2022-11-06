@@ -68,12 +68,13 @@ void ioSignal(){
     ioService().stop();
   });
 }
-void ioRun(){
-  ioRun([]{
-    ioService().run();
-  });
+void ioServiceRun(){
+  ioService().run();
 }
-void ioRun(const std::function<void(void)> &f){
+void ioServicePost(const asio_handler_t &f){
+  ioService().post(f);
+}
+void ioRun(const asio_handler_t &f){
   static const unsigned int t(std::thread::hardware_concurrency());
   if (!ioThreads()){
     ioService().restart();
@@ -93,11 +94,7 @@ void ioJoin(){
     ioThreads().reset(nullptr);
   }
 }
-void ioRunJoin(){
-  ioRun();
-  ioJoin();
-}
-void ioRunJoin(const std::function<void(void)> &f){
+void ioRunJoin(const asio_handler_t &f){
   ioRun(f);
   ioJoin();
 }

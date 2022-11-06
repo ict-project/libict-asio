@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
 //============================================
 #include "connection-message.hpp"
+#include "asio.hpp"
 #include "service.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
@@ -192,13 +193,13 @@ void message::async_write_request(request_t & request,const handler_t &handler){
                 }
             });   
         } else {
-            ict::asio::ioService().post([self,handler](){
+            ioServicePost([self,handler](){
                 ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
                 handler(ec);
             });
         }
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ok;
             handler(ok);
         });
@@ -246,13 +247,13 @@ void message::async_read_request(request_t & request,const handler_t &handler){
             } else {
                 request.version.clear();
             }
-            ict::asio::ioService().post([self,handler](){
+            ioServicePost([self,handler](){
                 ict::asio::error_code_t ok;
                 handler(ok);
             });
         }
     } else if (maxRead<read.size()){
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
             handler(ec);
         });
@@ -265,7 +266,7 @@ void message::async_read_request(request_t & request,const handler_t &handler){
             }
         });
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });
@@ -323,13 +324,13 @@ void message::async_write_response(response_t & response,const handler_t &handle
                 }
             });   
         } else {
-            ict::asio::ioService().post([self,handler](){
+            ioServicePost([self,handler](){
                 ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
                 handler(ec);
             });
         }
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ok;
             handler(ok);
         });
@@ -377,13 +378,13 @@ void message::async_read_response(response_t & response,const handler_t &handler
             } else {
                 response.explanation.clear();
             }
-            ict::asio::ioService().post([self,handler](){
+            ioServicePost([self,handler](){
                 ict::asio::error_code_t ok;
                 handler(ok);
             });
         }
     } else if (maxRead<read.size()){
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
             handler(ec);
         });
@@ -396,7 +397,7 @@ void message::async_read_response(response_t & response,const handler_t &handler
             }
         });
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });
@@ -462,13 +463,13 @@ void message::async_write_header(header_t & header,const handler_t &handler){
                 }
             });   
         } else {
-            ict::asio::ioService().post([self,handler](){
+            ioServicePost([self,handler](){
                 ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
                 handler(ec);
             });
         }
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ok;
             handler(ok);
         });
@@ -513,12 +514,12 @@ void message::async_read_header(header_t & header,const handler_t &handler){
                 }
             }
         }
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ok;
             handler(ok);
         });
     } else if (maxRead<read.size()){
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
             handler(ec);
         });
@@ -531,7 +532,7 @@ void message::async_read_header(header_t & header,const handler_t &handler){
             }
         });
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });
@@ -552,7 +553,7 @@ void message::async_write_body(const handler_t &handler){
                 }
             });
         } else {
-            ict::asio::ioService().post([self,handler](){
+            ioServicePost([self,handler](){
                 ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
                 handler(ec);
             });
@@ -573,7 +574,7 @@ void message::async_read_body(const handler_t &handler){
             handler(ec);
         });
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });

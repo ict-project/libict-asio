@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asio.hpp>
 #include <asio/ssl.hpp>
 #include "resolver.hpp"
+#include "asio.hpp"
 #include "service.hpp"
 //============================================
 namespace ict { namespace asio { namespace resolver {
@@ -117,7 +118,7 @@ public:
 //============================================
 void get(const std::string & host,const std::string & port,const tcp_handler_t & handler){
   if ((host=="")||(host=="0.0.0.0")||(host=="[::]")){
-    ict::asio::ioService().post([=](){
+    ioServicePost([=](){
       error_code_t ec;
       tcp_endpoint_info_ptr endpoint(new tcp_endpoint_info);
       if (endpoint){
@@ -136,7 +137,7 @@ void get(const std::string & host,const std::string & port,const tcp_handler_t &
   }
 }
 void get(const std::string & path,const stream_handler_t & handler){
-  ict::asio::ioService().post([path,handler](){
+  ioServicePost([path,handler](){
     error_code_t ec;
     stream_endpoint_info_ptr endpoint(new stream_endpoint_info);
     if (endpoint){

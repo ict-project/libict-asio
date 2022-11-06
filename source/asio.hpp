@@ -46,20 +46,24 @@ namespace ict { namespace asio {
 //! @param ec Kod błędu
 //! @param signal Numer sygnału
 typedef std::function<void(const error_code_t&,int)> signal_handler_t;
+//! Ogólny handler
+typedef std::function<void(void)> asio_handler_t;
 //===========================================
 //! Ustawienie obsługi sygnałów
 //! @param handler Funkcja do wykonania
 void ioSignal(const signal_handler_t & handler);
 //! Ustawienie obsługi sygnałów
 void ioSignal();
+// Uruchamia ::asio::io_service::run() w tym wątku.
+void ioServiceRun();
+// Uruchamia ::asio::io_service::post().
+void ioServicePost(const asio_handler_t &f);
 //! Uruchamia ::asio::io_service::run() w wielu osobnych wątkach
-void ioRun();
-void ioRun(const std::function<void(void)> &f);
+void ioRun(const asio_handler_t &f=[]{ioServiceRun();});
 //! Oczekuje na zakończenie ::asio::io_service::run() w wielu osobnych wątkach
 void ioJoin();
 //! Uruchamia i oczekuje na zakończenie ::asio::io_service::run() w wielu osobnych wątkach
-void ioRunJoin();
-void ioRunJoin(const std::function<void(void)> &f);
+void ioRunJoin(const asio_handler_t &f=[]{ioServiceRun();});
 //! Wykonuje ::asio::io_service::stop()
 void ioStop();
 //============================================

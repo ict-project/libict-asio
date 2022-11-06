@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //============================================
 #include <asio.hpp>
 #include <asio/ssl.hpp>
+#include "asio.hpp"
 #include "service.hpp"
 #include "connector.hpp"
 #include "resolver.hpp"
@@ -256,7 +257,7 @@ private:
       );
       return;
     }
-    ict::asio::ioService().post([this,self,handler](){
+    ioServicePost([this,self,handler](){
       ict::asio::connection::interface_ptr empty;
       BasicConnector<Socket>::error=true;
       handler(le,empty);

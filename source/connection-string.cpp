@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************/
 //============================================
 #include "connection-string.hpp"
+#include "asio.hpp"
 #include "service.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
@@ -42,7 +43,7 @@ static const std::size_t max(0x10000);
 void string::async_write_string(std::string & buffer,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (buffer.empty()){
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENODATA,std::generic_category());
             handler(ec);
         });
@@ -56,7 +57,7 @@ void string::async_write_string(std::string & buffer,const handler_t &handler){
             handler(ec);
         });
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });
@@ -65,7 +66,7 @@ void string::async_write_string(std::string & buffer,const handler_t &handler){
 void string::async_read_string(std::string & buffer,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (buffer.max_size()<(buffer.size()+max)){
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOBUFS,std::generic_category());
             handler(ec);
         });
@@ -78,7 +79,7 @@ void string::async_read_string(std::string & buffer,const handler_t &handler){
             handler(ec);
         });
     } else {
-        ict::asio::ioService().post([self,handler](){
+        ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
         });
