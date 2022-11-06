@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //============================================
 #include <map>
 #include <string>
+#include <functional>
 #include <system_error>
 //============================================
 namespace ict { namespace asio {
@@ -45,6 +46,8 @@ namespace ict { namespace asio {
 typedef std::map<std::string,std::string> map_info_t;
 //! Kod błędu
 typedef std::error_code error_code_t;
+//! Ogólny handler
+typedef std::function<void(void)> asio_handler_t;
 //============================================
 }}
 //===========================================

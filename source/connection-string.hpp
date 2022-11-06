@@ -75,6 +75,9 @@ public:
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
     //! 
     void async_read_string(std::string & buffer,const handler_t &handler);
+    //! Dodaje zadanie do wykonania w ramach ::asio::strand
+    //! @param handler Zadanie do wykonania.
+    void post(const asio_handler_t &handler);
 };
 //===========================================
 //! Wskaźnik do interfejsu do obsługi połączeń.

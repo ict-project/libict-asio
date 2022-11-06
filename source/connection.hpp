@@ -87,6 +87,9 @@ public:
   //! @param buffer Bufor dla danych z odczytu (Uwaga: rozmiar musi być ustawiony przed użyciem!).
   //! @param handler Funkcja do obsługi odczytu.
   virtual void async_read_some(buffer_t& buffer,const handler_t &handler)=0;
+  //! Dodaje zadanie do wykonania w ramach ::asio::strand
+  //! @param handler Zadanie do wykonania.
+  virtual void post(const asio_handler_t &handler)=0;
   //! Zwraca nazwę serwera (SNI).
   //! @returns Nazwa serwera (SNI).
   virtual const std::string & getSNI() {static const std::string nic;return(nic);};

@@ -141,128 +141,135 @@ std::size_t getLineSize(const std::string & input){
     }
     return(-1);
 }
+//============================================
 void message::async_write_request(request_t & request,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    if (!request.method.empty()){
-        std::size_t size=0;
-        size=getSpaceSize(request.method);
-        if (size!=-1){
-            request.method.erase(0,size);
-        }
-        size=getTokenSize(request.method);
-        if (size!=-1){
-            write.append(request.method.c_str(),size);
-        } else {
-            write.append(request.method);
-        }
-        request.method.clear();
-        write.append(_SPACE_);
-        size=getSpaceSize(request.uri);
-        if (size!=-1){
-            request.uri.erase(0,size);
-        }
-        size=getTokenSize(request.uri);
-        if (size!=-1){
-            write.append(request.uri.c_str(),size);
-        } else {
-            write.append(request.uri);
-        }
-        request.uri.clear();
-        write.append(_SPACE_);
-        size=getSpaceSize(request.version);
-        if (size!=-1){
-            request.version.erase(0,size);
-        }
-        size=getTokenSize(request.version);
-        if (size!=-1){
-            write.append(request.version.c_str(),size);
-        } else {
-            write.append(request.version);
-        }
-        request.version.clear();
-        write.append(_ENDL_);
-        minWrite=min;
-    }
-    if (minWrite<write.size()){
-        if (connection){
-            connection->async_write_string(write,[this,self,handler,&request](const ict::asio::error_code_t & ec){
-                if (ec){
-                    handler(ec);
-                } else {
-                    async_write_request(request,handler);
+    if (connection){
+        connection->post([this,self,handler,&request](){
+            if (!request.method.empty()){
+                std::size_t size=0;
+                size=getSpaceSize(request.method);
+                if (size!=-1){
+                    request.method.erase(0,size);
                 }
-            });   
-        } else {
-            ioServicePost([self,handler](){
-                ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
-                handler(ec);
-            });
-        }
+                size=getTokenSize(request.method);
+                if (size!=-1){
+                    write.append(request.method.c_str(),size);
+                } else {
+                    write.append(request.method);
+                }
+                request.method.clear();
+                write.append(_SPACE_);
+                size=getSpaceSize(request.uri);
+                if (size!=-1){
+                    request.uri.erase(0,size);
+                }
+                size=getTokenSize(request.uri);
+                if (size!=-1){
+                    write.append(request.uri.c_str(),size);
+                } else {
+                    write.append(request.uri);
+                }
+                request.uri.clear();
+                write.append(_SPACE_);
+                size=getSpaceSize(request.version);
+                if (size!=-1){
+                    request.version.erase(0,size);
+                }
+                size=getTokenSize(request.version);
+                if (size!=-1){
+                    write.append(request.version.c_str(),size);
+                } else {
+                    write.append(request.version);
+                }
+                request.version.clear();
+                write.append(_ENDL_);
+                minWrite=min;
+            }
+            if (minWrite<write.size()){
+                connection->async_write_string(write,[this,self,handler,&request](const ict::asio::error_code_t & ec){
+                    if (ec){
+                        handler(ec);
+                    } else {
+                        async_write_request(request,handler);
+                    }
+                });   
+            } else {
+                ioServicePost([self,handler](){
+                    ict::asio::error_code_t ok;
+                    handler(ok);
+                });
+            }
+        });
     } else {
         ioServicePost([self,handler](){
-            ict::asio::error_code_t ok;
-            handler(ok);
+            ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+            handler(ec);
         });
     }
 }
 void message::async_read_request(request_t & request,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    std::size_t size=getLineSize(read);
-    if (size!=-1){
-        std::string line(read.c_str(),size);
-        read.erase(0,size);
-        size=getSpaceSize(line);
-        if (size!=-1){
-            line.erase(0,size);
-        }
-        size=getTokenSize(line);
-        if (size!=-1){
-            request.method.assign(line.c_str(),size);
-            line.erase(0,size);
-        } else {
-            request.method.clear();
-        }
-        if (request.method.empty()){
-            async_read_request(request,handler);
-        } else {
-            size=getSpaceSize(line);
+    if (connection){
+        connection->post([this,self,handler,&request](){
+            std::size_t size=getLineSize(read);
             if (size!=-1){
-                line.erase(0,size);
-            }
-            size=getTokenSize(line);
-            if (size!=-1){
-                request.uri.assign(line.c_str(),size);
-                line.erase(0,size);
+                std::string line(read.c_str(),size);
+                read.erase(0,size);
+                size=getSpaceSize(line);
+                if (size!=-1){
+                    line.erase(0,size);
+                }
+                size=getTokenSize(line);
+                if (size!=-1){
+                    request.method.assign(line.c_str(),size);
+                    line.erase(0,size);
+                } else {
+                    request.method.clear();
+                }
+                if (request.method.empty()){
+                    async_read_request(request,handler);
+                } else {
+                    size=getSpaceSize(line);
+                    if (size!=-1){
+                        line.erase(0,size);
+                    }
+                    size=getTokenSize(line);
+                    if (size!=-1){
+                        request.uri.assign(line.c_str(),size);
+                        line.erase(0,size);
+                    } else {
+                        request.uri.clear();
+                    }
+                    size=getSpaceSize(line);
+                    if (size!=-1){
+                        line.erase(0,size);
+                    }
+                    size=getTokenSize(line);
+                    if (size!=-1){
+                        request.version.assign(line.c_str(),size);
+                        line.erase(0,size);
+                    } else {
+                        request.version.clear();
+                    }
+                    ioServicePost([self,handler](){
+                        ict::asio::error_code_t ok;
+                        handler(ok);
+                    });
+                }
+            } else if (maxRead<read.size()){
+                ioServicePost([self,handler](){
+                    ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
+                    handler(ec);
+                });
             } else {
-                request.uri.clear();
-            }
-            size=getSpaceSize(line);
-            if (size!=-1){
-                line.erase(0,size);
-            }
-            size=getTokenSize(line);
-            if (size!=-1){
-                request.version.assign(line.c_str(),size);
-                line.erase(0,size);
-            } else {
-                request.version.clear();
-            }
-            ioServicePost([self,handler](){
-                ict::asio::error_code_t ok;
-                handler(ok);
-            });
-        }
-    } else if (maxRead<read.size()){
-        ioServicePost([self,handler](){
-            ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
-            handler(ec);
-        });
-    } else if (connection){
-        connection->async_read_string(read,[this,self,handler,&request](const ict::asio::error_code_t & ec){
-            if (ec){
-               handler(ec);
-            } else {
-                async_read_request(request,handler);
+                connection->async_read_string(read,[this,self,handler,&request](const ict::asio::error_code_t & ec){
+                    if (ec){
+                    handler(ec);
+                    } else {
+                        async_read_request(request,handler);
+                    }
+                });
             }
         });
     } else {
@@ -274,126 +281,132 @@ void message::async_read_request(request_t & request,const handler_t &handler){
 }
 void message::async_write_response(response_t & response,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    if (!response.version.empty()){
-        std::size_t size=0;
-        size=getSpaceSize(response.version);
-        if (size!=-1){
-            response.version.erase(0,size);
-        }
-        size=getTokenSize(response.version);
-        if (size!=-1){
-            write.append(response.version.c_str(),size);
-        } else {
-            write.append(response.version);
-        }
-        response.version.clear();
-        write.append(_SPACE_);
-        size=getSpaceSize(response.code);
-        if (size!=-1){
-            response.code.erase(0,size);
-        }
-        size=getTokenSize(response.code);
-        if (size!=-1){
-            write.append(response.code.c_str(),size);
-        } else {
-            write.append(response.code);
-        }
-        response.code.clear();
-        write.append(_SPACE_);
-        size=getSpaceSize(response.explanation);
-        if (size!=-1){
-            response.explanation.erase(0,size);
-        }
-        size=getPhraseSize(response.explanation);
-        if (size!=-1){
-            write.append(response.explanation.c_str(),size);
-        } else {
-            write.append(response.explanation);
-        }
-        response.explanation.clear();
-        write.append(_ENDL_);
-        minWrite=min;
-    }
-    if (minWrite<write.size()){
-        if (connection){
-            connection->async_write_string(write,[this,self,handler,&response](const ict::asio::error_code_t & ec){
-                if (ec){
-                    handler(ec);
-                } else {
-                    async_write_response(response,handler);
+    if (connection){
+        connection->post([this,self,handler,&response](){
+            if (!response.version.empty()){
+                std::size_t size=0;
+                size=getSpaceSize(response.version);
+                if (size!=-1){
+                    response.version.erase(0,size);
                 }
-            });   
-        } else {
-            ioServicePost([self,handler](){
-                ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
-                handler(ec);
-            });
-        }
+                size=getTokenSize(response.version);
+                if (size!=-1){
+                    write.append(response.version.c_str(),size);
+                } else {
+                    write.append(response.version);
+                }
+                response.version.clear();
+                write.append(_SPACE_);
+                size=getSpaceSize(response.code);
+                if (size!=-1){
+                    response.code.erase(0,size);
+                }
+                size=getTokenSize(response.code);
+                if (size!=-1){
+                    write.append(response.code.c_str(),size);
+                } else {
+                    write.append(response.code);
+                }
+                response.code.clear();
+                write.append(_SPACE_);
+                size=getSpaceSize(response.explanation);
+                if (size!=-1){
+                    response.explanation.erase(0,size);
+                }
+                size=getPhraseSize(response.explanation);
+                if (size!=-1){
+                    write.append(response.explanation.c_str(),size);
+                } else {
+                    write.append(response.explanation);
+                }
+                response.explanation.clear();
+                write.append(_ENDL_);
+                minWrite=min;
+            }
+            if (minWrite<write.size()){
+                connection->async_write_string(write,[this,self,handler,&response](const ict::asio::error_code_t & ec){
+                    if (ec){
+                        handler(ec);
+                    } else {
+                        async_write_response(response,handler);
+                    }
+                });   
+            } else {
+                ioServicePost([self,handler](){
+                    ict::asio::error_code_t ok;
+                    handler(ok);
+                });
+            }
+        });
     } else {
         ioServicePost([self,handler](){
-            ict::asio::error_code_t ok;
-            handler(ok);
+            ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+            handler(ec);
         });
     }
 }
 void message::async_read_response(response_t & response,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    std::size_t size=getLineSize(read);
-    if (size!=-1){
-        std::string line(read.c_str(),size);
-        read.erase(0,size);
-        size=getSpaceSize(line);
-        if (size!=-1){
-            line.erase(0,size);
-        }
-        size=getTokenSize(line);
-        if (size!=-1){
-            response.version.assign(line.c_str(),size);
-            line.erase(0,size);
-        } else {
-            response.version.clear();
-        }
-        if (response.version.empty()){
-            async_read_response(response,handler);
-        } else {
-            size=getSpaceSize(line);
+    if (connection){
+        connection->post([this,self,handler,&response](){
+            std::size_t size=getLineSize(read);
             if (size!=-1){
-                line.erase(0,size);
-            }
-            size=getTokenSize(line);
-            if (size!=-1){
-                response.code.assign(line.c_str(),size);
-                line.erase(0,size);
+                std::string line(read.c_str(),size);
+                read.erase(0,size);
+                size=getSpaceSize(line);
+                if (size!=-1){
+                    line.erase(0,size);
+                }
+                size=getTokenSize(line);
+                if (size!=-1){
+                    response.version.assign(line.c_str(),size);
+                    line.erase(0,size);
+                } else {
+                    response.version.clear();
+                }
+                if (response.version.empty()){
+                    async_read_response(response,handler);
+                } else {
+                    size=getSpaceSize(line);
+                    if (size!=-1){
+                        line.erase(0,size);
+                    }
+                    size=getTokenSize(line);
+                    if (size!=-1){
+                        response.code.assign(line.c_str(),size);
+                        line.erase(0,size);
+                    } else {
+                        response.code.clear();
+                    }
+                    size=getSpaceSize(line);
+                    if (size!=-1){
+                        line.erase(0,size);
+                    }
+                    size=getPhraseSize(line);
+                    if (size!=-1){
+                        response.explanation.assign(line.c_str(),size);
+                        line.erase(0,size);
+                    } else {
+                        response.explanation.clear();
+                    }
+                    ioServicePost([self,handler](){
+                        ict::asio::error_code_t ok;
+                        handler(ok);
+                    });
+                }
+            } else if (maxRead<read.size()){
+                ioServicePost([self,handler](){
+                    ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
+                    handler(ec);
+                });
             } else {
-                response.code.clear();
-            }
-            size=getSpaceSize(line);
-            if (size!=-1){
-                line.erase(0,size);
-            }
-            size=getPhraseSize(line);
-            if (size!=-1){
-                response.explanation.assign(line.c_str(),size);
-                line.erase(0,size);
-            } else {
-                response.explanation.clear();
-            }
-            ioServicePost([self,handler](){
-                ict::asio::error_code_t ok;
-                handler(ok);
-            });
-        }
-    } else if (maxRead<read.size()){
-        ioServicePost([self,handler](){
-            ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
-            handler(ec);
-        });
-    } else if (connection){
-        connection->async_read_string(read,[this,self,handler,&response](const ict::asio::error_code_t & ec){
-            if (ec){
-                handler(ec);
-            } else {
-                async_read_response(response,handler);
+                connection->async_read_string(read,[this,self,handler,&response](const ict::asio::error_code_t & ec){
+                    if (ec){
+                        handler(ec);
+                    } else {
+                        async_read_response(response,handler);
+                    }
+                });
             }
         });
     } else {
@@ -405,130 +418,136 @@ void message::async_read_response(response_t & response,const handler_t &handler
 }
 void message::async_write_header(header_t & header,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    if (!header.name.empty()){
-        std::size_t size=0;
-        size=getSpaceSize(header.name);
-        if (size!=-1){
-            header.name.erase(0,size);
-        }
-        size=getNameSize(header.name);
-        if (size!=-1){
-            write.append(header.name.c_str(),size);
-        } else {
-            write.append(header.name);
-        }
-        header.name.clear();
-        if (size) {
-            bool first=true;
-            write.append(_COLON_);
-            write.append(_SPACE_);
-            size=getSpaceSize(header.value);
-            if (size!=-1){
-                header.value.erase(0,size);
-            }
-            while (size=getPhraseSize(header.value)){
-                if (first){
-                    first=false;
-                } else {
-                    write.append(_ENDL_);
-                    write.append(_SPACE_);
-                }
-                if (size!=-1) {
-                    write.append(header.value.c_str(),size);
-                    header.value.erase(0,size);
-                } else {
-                    write.append(header.value);
-                    header.value.clear();
-                    break;
-                }
-                size=getSpaceSize(header.value);
+    if (connection){
+        connection->post([this,self,handler,&header](){
+            if (!header.name.empty()){
+                std::size_t size=0;
+                size=getSpaceSize(header.name);
                 if (size!=-1){
-                    header.value.erase(0,size);
+                    header.name.erase(0,size);
                 }
-            }
-            minWrite=min;
-        } else {
-            minWrite=0;
-        }
-        header.value.clear();
-        write.append(_ENDL_);
-    }
-    if (minWrite<write.size()){
-        if (connection){
-            connection->async_write_string(write,[this,self,handler,&header](const ict::asio::error_code_t & ec){
-                if (ec){
-                    handler(ec);
+                size=getNameSize(header.name);
+                if (size!=-1){
+                    write.append(header.name.c_str(),size);
                 } else {
-                    async_write_header(header,handler);
+                    write.append(header.name);
                 }
-            });   
-        } else {
-            ioServicePost([self,handler](){
-                ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
-                handler(ec);
-            });
-        }
+                header.name.clear();
+                if (size) {
+                    bool first=true;
+                    write.append(_COLON_);
+                    write.append(_SPACE_);
+                    size=getSpaceSize(header.value);
+                    if (size!=-1){
+                        header.value.erase(0,size);
+                    }
+                    while (size=getPhraseSize(header.value)){
+                        if (first){
+                            first=false;
+                        } else {
+                            write.append(_ENDL_);
+                            write.append(_SPACE_);
+                        }
+                        if (size!=-1) {
+                            write.append(header.value.c_str(),size);
+                            header.value.erase(0,size);
+                        } else {
+                            write.append(header.value);
+                            header.value.clear();
+                            break;
+                        }
+                        size=getSpaceSize(header.value);
+                        if (size!=-1){
+                            header.value.erase(0,size);
+                        }
+                    }
+                    minWrite=min;
+                } else {
+                    minWrite=0;
+                }
+                header.value.clear();
+                write.append(_ENDL_);
+            }
+            if (minWrite<write.size()){
+                connection->async_write_string(write,[this,self,handler,&header](const ict::asio::error_code_t & ec){
+                    if (ec){
+                        handler(ec);
+                    } else {
+                        async_write_header(header,handler);
+                    }
+                });   
+            } else {
+                ioServicePost([self,handler](){
+                    ict::asio::error_code_t ok;
+                    handler(ok);
+                });
+            }
+        });
     } else {
         ioServicePost([self,handler](){
-            ict::asio::error_code_t ok;
-            handler(ok);
+            ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+            handler(ec);
         });
     }
 }
 void message::async_read_header(header_t & header,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    std::size_t size=getLineSize(read);
-    if (size!=-1){
-        std::string line(read.c_str(),size);
-        read.erase(0,size);
-        size=getSpaceSize(line);
-        if (size!=-1){
-            line.erase(0,size);
-        }
-        size=getNameSize(line);
-        if (size!=-1){
-            header.name.assign(line.c_str(),size);
-            line.erase(0,size);
-        } else {
-            header.name.clear();
-        }
-        header.value.clear();
-        if (header.name.empty()){
-            header.name.assign(_COLON_);
-        } else {
-            size=getSpaceColonSize(line);
+    if (connection){
+        connection->post([this,self,handler,&header](){
+            std::size_t size=getLineSize(read);
             if (size!=-1){
-                line.erase(0,size);
-            }
-            while (size=getPhraseSize(line)){
+                std::string line(read.c_str(),size);
+                read.erase(0,size);
+                size=getSpaceSize(line);
                 if (size!=-1){
-                    if (!header.value.empty()) header.value.append(1,'\n');
-                    header.value.append(line.c_str(),size);
                     line.erase(0,size);
-                    size=getSpaceSize(line);
+                }
+                size=getNameSize(line);
+                if (size!=-1){
+                    header.name.assign(line.c_str(),size);
+                    line.erase(0,size);
+                } else {
+                    header.name.clear();
+                }
+                header.value.clear();
+                if (header.name.empty()){
+                    header.name.assign(_COLON_);
+                } else {
+                    size=getSpaceColonSize(line);
                     if (size!=-1){
                         line.erase(0,size);
                     }
-                } else {
-                    break;
+                    while (size=getPhraseSize(line)){
+                        if (size!=-1){
+                            if (!header.value.empty()) header.value.append(1,'\n');
+                            header.value.append(line.c_str(),size);
+                            line.erase(0,size);
+                            size=getSpaceSize(line);
+                            if (size!=-1){
+                                line.erase(0,size);
+                            }
+                        } else {
+                            break;
+                        }
+                    }
                 }
-            }
-        }
-        ioServicePost([self,handler](){
-            ict::asio::error_code_t ok;
-            handler(ok);
-        });
-    } else if (maxRead<read.size()){
-        ioServicePost([self,handler](){
-            ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
-            handler(ec);
-        });
-    } else if (connection){
-        connection->async_read_string(read,[this,self,handler,&header](const ict::asio::error_code_t & ec){
-            if (ec){
-                handler(ec);    
+                ioServicePost([self,handler](){
+                    ict::asio::error_code_t ok;
+                    handler(ok);
+                });
+            } else if (maxRead<read.size()){
+                ioServicePost([self,handler](){
+                    ict::asio::error_code_t ec(EMSGSIZE,std::generic_category());
+                    handler(ec);
+                });
             } else {
-                async_read_header(header,handler);
+                connection->async_read_string(read,[this,self,handler,&header](const ict::asio::error_code_t & ec){
+                    if (ec){
+                        handler(ec);    
+                    } else {
+                        async_read_header(header,handler);
+                    }
+                });
             }
         });
     } else {
@@ -540,11 +559,11 @@ void message::async_read_header(header_t & header,const handler_t &handler){
 }
 void message::async_write_body(const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    if (write.empty()){
-        ict::asio::error_code_t ok;
-        handler(ok);
-    } else {
-        if (connection){
+    if (connection){
+        if (write.empty()){
+            ict::asio::error_code_t ok;
+            handler(ok);
+        } else {
             connection->async_write_string(write,[this,self,handler](const ict::asio::error_code_t & ec){
                 if (ec){
                     handler(ec);
@@ -552,20 +571,30 @@ void message::async_write_body(const handler_t &handler){
                     async_write_body(handler);
                 }
             });
-        } else {
-            ioServicePost([self,handler](){
-                ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
-                handler(ec);
-            });
         }
+    } else {
+        ioServicePost([self,handler](){
+            ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+            handler(ec);
+        });
     }
 }
 void message::async_write_body(std::string & data,std::size_t & bytesLeft,const handler_t &handler){
-    std::size_t size=(bytesLeft<data.size())?bytesLeft:data.size();
-    bytesLeft-=size;
-    write.append(data.c_str(),size);
-    data.erase(0,size);
-    async_write_body(handler);
+    auto self(enable_shared_t::shared_from_this());
+    if (connection){
+        connection->post([this,self,handler,&data,&bytesLeft](){
+            std::size_t size=(bytesLeft<data.size())?bytesLeft:data.size();
+            bytesLeft-=size;
+            write.append(data.c_str(),size);
+            data.erase(0,size);
+            async_write_body(handler);
+        });
+    } else {
+        ioServicePost([self,handler](){
+            ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+            handler(ec);
+        });
+    }
 }
 void message::async_read_body(const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
@@ -582,20 +611,28 @@ void message::async_read_body(const handler_t &handler){
 }
 void message::async_read_body(std::string & data,std::size_t & bytesLeft,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
-    async_read_body([this,self,handler,&data,&bytesLeft](const ict::asio::error_code_t & ec){
-        if (ec){
+    if (connection){
+        connection->post([this,self,handler,&data,&bytesLeft](){
+            async_read_body([this,self,handler,&data,&bytesLeft](const ict::asio::error_code_t & ec){
+                if (ec){
+                    handler(ec);
+                } else {
+                    ict::asio::error_code_t ok;
+                    std::size_t size=(bytesLeft<read.size())?bytesLeft:read.size();
+                    bytesLeft-=size;
+                    data.append(read.c_str(),size);
+                    read.erase(0,size);
+                    handler(ok);
+                }
+            });
+        });
+    } else {
+        ioServicePost([self,handler](){
+            ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
             handler(ec);
-        } else {
-            ict::asio::error_code_t ok;
-            std::size_t size=(bytesLeft<read.size())?bytesLeft:read.size();
-            bytesLeft-=size;
-            data.append(read.c_str(),size);
-            read.erase(0,size);
-            handler(ok);
-        }
-    });
+        });
+    }
 }
-
 void message::async_write_headers(headers_t & headers,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (headers.empty()){
@@ -667,6 +704,14 @@ void message::async_read_response_headers(response_headers_t & response,const ha
             async_read_headers(response.headers,handler);
         }
     });
+}
+void message::post(const asio_handler_t &handler){
+  auto self(enable_shared_t::shared_from_this());
+  if (connection){
+    connection->post([self,handler](){
+      handler();
+    });
+  }
 }
 message_ptr get(string_ptr iface){
     return message_ptr(std::make_shared<message>(iface));

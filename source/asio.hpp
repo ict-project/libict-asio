@@ -35,7 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _ASIO__HEADER
 #define _ASIO__HEADER
 //============================================
-#include <functional>
 #include "types.hpp"
 //============================================
 namespace ict { namespace asio {
@@ -44,8 +43,6 @@ namespace ict { namespace asio {
 //! @param ec Kod błędu
 //! @param signal Numer sygnału
 typedef std::function<void(const error_code_t&,int)> signal_handler_t;
-//! Ogólny handler
-typedef std::function<void(void)> asio_handler_t;
 //===========================================
 //! Ustawienie obsługi sygnałów
 //! @param handler Funkcja do wykonania

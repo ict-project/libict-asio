@@ -48,14 +48,16 @@ void string::async_write_string(std::string & buffer,const handler_t &handler){
             handler(ec);
         });
     } else if (connection){
-        std::size_t size=(max<buffer.size())?max:buffer.size();
-        write.resize(size);
-        buffer.copy((char*)write.data(),size,0);
-        connection->async_write_some(write,[this,self,handler,&buffer](const ict::asio::error_code_t& ec,std::size_t s){
+        connection->post([this,self,handler,&buffer](){
+          std::size_t size=(max<buffer.size())?max:buffer.size();
+          write.resize(size);
+          buffer.copy((char*)write.data(),size,0);
+          connection->async_write_some(write,[this,self,handler,&buffer](const ict::asio::error_code_t& ec,std::size_t s){
             write.clear();
             buffer.erase(0,s);
             handler(ec);
         });
+      });
     } else {
         ioServicePost([self,handler](){
             ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
@@ -71,12 +73,14 @@ void string::async_read_string(std::string & buffer,const handler_t &handler){
             handler(ec);
         });
     } else if (connection){
-        std::size_t size=max;
-        read.resize(size);
-        connection->async_read_some(read,[this,self,handler,&buffer](const ict::asio::error_code_t& ec,std::size_t s){
+        connection->post([this,self,handler,&buffer](){
+          std::size_t size=max;
+          read.resize(size);
+          connection->async_read_some(read,[this,self,handler,&buffer](const ict::asio::error_code_t& ec,std::size_t s){
             buffer.append((char*)read.data(),s);
             read.clear();
             handler(ec);
+          });
         });
     } else {
         ioServicePost([self,handler](){
@@ -84,6 +88,14 @@ void string::async_read_string(std::string & buffer,const handler_t &handler){
             handler(ec);
         });
     }
+}
+void string::post(const asio_handler_t &handler){
+  auto self(enable_shared_t::shared_from_this());
+  if (connection){
+    connection->post([self,handler](){
+      handler();
+    });
+  }
 }
 string_ptr get(interface_ptr iface){
     return string_ptr(std::make_shared<string>(iface));
