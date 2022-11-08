@@ -214,6 +214,10 @@ public:
 //===========================================
 //! Wskaźnik do interfejsu do obsługi połączeń.
 typedef std::shared_ptr<message> message_ptr;
+//! Handler do obsługi nowych połączeń
+//! @param ec Kod błędu
+//! @param interface  Wskaźnik do interfejsu do obsługi połączeń.
+typedef std::function<void(const error_code_t&,message_ptr)> message_handler_t;
 //============================================
 }}}
 //===========================================

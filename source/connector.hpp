@@ -38,6 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //============================================
 #include "types.hpp"
 #include "connection.hpp"
+#include "connection-string.hpp"
+#include "connection-message.hpp"
 //============================================
 namespace ict { namespace asio { namespace connector {
 //===========================================
@@ -60,6 +62,8 @@ public:
     //! Obsługuje nowe połączenie.
     //! @param handler Funkcja do obsługi nowego połaczenia.
     virtual void async_connection(const ict::asio::connection::connection_handler_t &handler)=0;
+    void async_connection(const ict::asio::connection::string_handler_t &handler);
+    void async_connection(const ict::asio::connection::message_handler_t &handler);
 };
 //===========================================
 //! Wskaźnik do interfejsu konektora.

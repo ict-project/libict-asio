@@ -41,6 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "service.h"
 #include "resolver.h"
 #include "connection.h"
+#include "connection-string.h"
+#include "connection-message.h"
 //============================================
 namespace ict { namespace asio { namespace connector {
 //============================================
@@ -55,6 +57,17 @@ const static std::string _1_("1");
 const static std::string _0_("0");
 const static std::string _empty_("");
 const static std::string _connector_sni_("connector_sni");
+//============================================
+void interface::async_connection(const ict::asio::connection::string_handler_t &handler){
+  async_connection([handler](const error_code_t& ec,ict::asio::connection::interface_ptr ptr){
+    handler(ec,ict::asio::connection::getString(ptr));
+  });
+}
+void interface::async_connection(const ict::asio::connection::message_handler_t &handler){
+  async_connection([handler](const error_code_t& ec,ict::asio::connection::interface_ptr ptr){
+    handler(ec,ict::asio::connection::getMessage(ptr));
+  });
+}
 //============================================
 namespace server {
 //============================================

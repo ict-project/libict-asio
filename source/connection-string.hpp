@@ -81,6 +81,10 @@ public:
 //===========================================
 //! Wskaźnik do interfejsu do obsługi połączeń.
 typedef std::shared_ptr<string> string_ptr;
+//! Handler do obsługi nowych połączeń
+//! @param ec Kod błędu
+//! @param interface  Wskaźnik do interfejsu do obsługi połączeń.
+typedef std::function<void(const error_code_t&,string_ptr)> string_handler_t;
 //============================================
 }}}
 //===========================================
