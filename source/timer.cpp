@@ -154,7 +154,7 @@ void Timer::exec(const error_code_t& ec){
     auto self(enable_shared_t::shared_from_this());
     strand.post([self,this,ec](){
         while(!handlers.empty()) {
-            handlers.back()(ec);
+            handlers.front()(ec);
             handlers.pop();
         }
         if (!ec) expired=true;
