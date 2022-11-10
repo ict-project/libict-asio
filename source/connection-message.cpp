@@ -142,7 +142,7 @@ std::size_t getLineSize(const std::string & input){
     return(-1);
 }
 //============================================
-void message::async_write_request(request_t & request,const handler_t &handler){
+void message::async_write_request(ict::asio::message::request_t & request,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (connection){
         connection->post([this,self,handler,&request](){
@@ -208,7 +208,7 @@ void message::async_write_request(request_t & request,const handler_t &handler){
         });
     }
 }
-void message::async_read_request(request_t & request,const handler_t &handler){
+void message::async_read_request(ict::asio::message::request_t & request,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (connection){
         connection->post([this,self,handler,&request](){
@@ -279,7 +279,7 @@ void message::async_read_request(request_t & request,const handler_t &handler){
         });
     }
 }
-void message::async_write_response(response_t & response,const handler_t &handler){
+void message::async_write_response(ict::asio::message::response_t & response,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (connection){
         connection->post([this,self,handler,&response](){
@@ -345,7 +345,7 @@ void message::async_write_response(response_t & response,const handler_t &handle
         });
     }
 }
-void message::async_read_response(response_t & response,const handler_t &handler){
+void message::async_read_response(ict::asio::message::response_t & response,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (connection){
         connection->post([this,self,handler,&response](){
@@ -416,7 +416,7 @@ void message::async_read_response(response_t & response,const handler_t &handler
         });
     }
 }
-void message::async_write_header(header_t & header,const handler_t &handler){
+void message::async_write_header(ict::asio::message::header_t & header,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (connection){
         connection->post([this,self,handler,&header](){
@@ -490,7 +490,7 @@ void message::async_write_header(header_t & header,const handler_t &handler){
         });
     }
 }
-void message::async_read_header(header_t & header,const handler_t &handler){
+void message::async_read_header(ict::asio::message::header_t & header,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (connection){
         connection->post([this,self,handler,&header](){
@@ -633,7 +633,7 @@ void message::async_read_body(std::string & data,std::size_t & bytesLeft,const h
         });
     }
 }
-void message::async_write_headers(headers_t & headers,const handler_t &handler){
+void message::async_write_headers(ict::asio::message::headers_t & headers,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     if (headers.empty()){
         ict::asio::error_code_t ok;
@@ -649,7 +649,7 @@ void message::async_write_headers(headers_t & headers,const handler_t &handler){
         });
     }
 }
-void message::async_read_headers(headers_t & headers,const handler_t &handler){
+void message::async_read_headers(ict::asio::message::headers_t & headers,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     headers.emplace_back();
     async_read_header(headers[headers.size()-1],[this,self,&headers,handler](const ict::asio::error_code_t & ec){
@@ -665,7 +665,7 @@ void message::async_read_headers(headers_t & headers,const handler_t &handler){
         }
     });
 }
-void message::async_write_request_headers(request_headers_t & request,const handler_t &handler){
+void message::async_write_request_headers(ict::asio::message::request_headers_t & request,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     async_write_request(request.request,[this,self,&request,handler](const ict::asio::error_code_t & ec){
         if (ec){
@@ -675,7 +675,7 @@ void message::async_write_request_headers(request_headers_t & request,const hand
         }
     });
 }
-void message::async_read_request_headers(request_headers_t & request,const handler_t &handler){
+void message::async_read_request_headers(ict::asio::message::request_headers_t & request,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     async_read_request(request.request,[this,self,&request,handler](const ict::asio::error_code_t & ec){
         if (ec){
@@ -685,7 +685,7 @@ void message::async_read_request_headers(request_headers_t & request,const handl
         }
     });
 }
-void message::async_write_response_headers(response_headers_t & response,const handler_t &handler){
+void message::async_write_response_headers(ict::asio::message::response_headers_t & response,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     async_write_response(response.response,[this,self,&response,handler](const ict::asio::error_code_t & ec){
         if (ec){
@@ -695,7 +695,7 @@ void message::async_write_response_headers(response_headers_t & response,const h
         }
     });
 }
-void message::async_read_response_headers(response_headers_t & response,const handler_t &handler){
+void message::async_read_response_headers(ict::asio::message::response_headers_t & response,const handler_t &handler){
     auto self(enable_shared_t::shared_from_this());
     async_read_response(response.response,[this,self,&response,handler](const ict::asio::error_code_t & ec){
         if (ec){
@@ -739,7 +739,7 @@ message_ptr getMessage(::asio::local::stream_protocol::socket & socket,context_p
 #include "asio.hpp"
 #include "connector.hpp"
 
-static const ict::asio::connection::message::response_headers_t server_example={
+static const ict::asio::message::response_headers_t server_example={
     .response={
         .version="HTTP/1.1",
         .code="200",
@@ -756,7 +756,7 @@ static const ict::asio::connection::message::response_headers_t server_example={
         },
     }
 };
-static const ict::asio::connection::message::request_headers_t client_example={
+static const ict::asio::message::request_headers_t client_example={
     .request={
         .method="POST",
         .uri="/",
@@ -781,10 +781,10 @@ static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio
     std::atomic<int> k=4;
     std::string port;
     ::asio::steady_timer t(ict::asio::ioService());
-    ict::asio::connection::message::response_headers_t s_write_buffer=server_example;
-    ict::asio::connection::message::request_headers_t s_read_buffer;
-    ict::asio::connection::message::request_headers_t c_write_buffer=client_example;
-    ict::asio::connection::message::response_headers_t c_read_buffer;
+    ict::asio::message::response_headers_t s_write_buffer=server_example;
+    ict::asio::message::request_headers_t s_read_buffer;
+    ict::asio::message::request_headers_t c_write_buffer=client_example;
+    ict::asio::message::response_headers_t c_read_buffer;
     srand(time(NULL));
 
     t.expires_from_now(std::chrono::seconds(60));

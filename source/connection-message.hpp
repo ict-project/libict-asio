@@ -55,38 +55,9 @@ public:
     //! Typ pomocniczy do generowania wskaźnika.
     typedef  std::enable_shared_from_this<message> enable_shared_t;
     //! Typ - Funkcja do obsługi zapisu lub odczytu.
-    typedef std::function<void(const ict::asio::error_code_t&)> handler_t;
+    typedef ict::asio::error_handler_t handler_t;
     //! Interfejs połączenia (string).
     string_ptr connection;
-    //! Struktura z danymi zapytania.
-    struct request_t {
-        std::string method;
-        std::string uri;
-        std::string version;
-    };
-    //! Struktura z danymi odpowiedzi.
-    struct response_t {
-        std::string version;
-        std::string code;
-        std::string explanation;
-    };
-    //! Struktura z danymi nagłówka.
-    struct header_t {
-        std::string name;
-        std::string value;  
-    };
-    //! Typ listy nagłówków.
-    typedef std::vector<header_t> headers_t;
-    //! Struktura z danymi zapytania oraz nagłówków.
-    struct request_headers_t {
-        request_t request;
-        headers_t headers;
-    };
-    //! Struktura z danymi odpowiedzi oraz nagłówków.
-    struct response_headers_t {
-        response_t response;
-        headers_t headers;
-    };
 private:
     //! 
     //! @brief Zapisuje body wiadomości.
@@ -113,42 +84,42 @@ public:
     //! @param request Dane zapytania.
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
     //! 
-    void async_write_request(request_t & request,const handler_t &handler);
+    void async_write_request(ict::asio::message::request_t & request,const handler_t &handler);
     //! 
     //! @brief Odczytuje wiersz zapytania.
     //! 
     //! @param request Dane zapytania.
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
     //! 
-    void async_read_request(request_t & request,const handler_t &handler);
+    void async_read_request(ict::asio::message::request_t & request,const handler_t &handler);
     //! 
     //! @brief Zapisuje wiersz odpowiedzi.
     //! 
     //! @param response Dane odpowiedzi.
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
     //! 
-    void async_write_response(response_t & response,const handler_t &handler);
+    void async_write_response(ict::asio::message::response_t & response,const handler_t &handler);
     //! 
     //! @brief Odczytuje wiersz odpowiedzi.
     //! 
     //! @param response Dane odpowiedzi.
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
     //! 
-    void async_read_response(response_t & response,const handler_t &handler);
+    void async_read_response(ict::asio::message::response_t & response,const handler_t &handler);
     //! 
     //! @brief Zapisuje nagłówek.
     //! 
     //! @param header Dane nagłówka. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków.
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
     //! 
-    void async_write_header(header_t & header,const handler_t &handler);
+    void async_write_header(ict::asio::message::header_t & header,const handler_t &handler);
     //! 
     //! @brief Odczytuje nagłówek.
     //! 
     //! @param header Dane nagłówka. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków.
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
     //! 
-    void async_read_header(header_t & header,const handler_t &handler);
+    void async_read_header(ict::asio::message::header_t & header,const handler_t &handler);
     //! 
     //! @brief Zapisuje dane body wiadomości.
     //! 
@@ -171,42 +142,42 @@ public:
     //! @param headers Dane nagłówków. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków (tak poiwnien być ustawiony ostatni).
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
     //! 
-    void async_write_headers(headers_t & headers,const handler_t &handler);
+    void async_write_headers(ict::asio::message::headers_t & headers,const handler_t &handler);
     //! 
     //! @brief Odczytuje nagłówki.
     //! 
     //! @param headers Dane nagłówków. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków (tak będzie ustawiony ostatni).
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
     //! 
-    void async_read_headers(headers_t & headers,const handler_t &handler);
+    void async_read_headers(ict::asio::message::headers_t & headers,const handler_t &handler);
     //! 
     //! @brief Zapisuje wiersz zapytania oraz nagłówki.
     //! 
     //! @param request Dane zapytania oraz nagłówków. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków (tak poiwnien być ustawiony ostatni).
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
     //! 
-    void async_write_request_headers(request_headers_t & request,const handler_t &handler);
+    void async_write_request_headers(ict::asio::message::request_headers_t & request,const handler_t &handler);
     //! 
     //! @brief Odczytuje wiersz zapytania oraz nagłówki.
     //! 
     //! @param request Dane zapytania oraz nagłówków. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków (tak będzie ustawiony ostatni).
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
     //! 
-    void async_read_request_headers(request_headers_t & request,const handler_t &handler);
+    void async_read_request_headers(ict::asio::message::request_headers_t & request,const handler_t &handler);
     //! 
     //! @brief Zapisuje wiersz odpowiedzi oraz nagłówki.
     //! 
     //! @param request Dane odpowiedzi oraz nagłówków. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków (tak poiwnien być ustawiony ostatni).
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
     //! 
-    void async_write_response_headers(response_headers_t & response,const handler_t &handler);
+    void async_write_response_headers(ict::asio::message::response_headers_t & response,const handler_t &handler);
     //! 
     //! @brief Odczytuje wiersz odpowiedzi oraz nagłówki.
     //! 
     //! @param request Dane odpowiedzi oraz nagłówków. Jeśli header.name jest ustawione na ":", to oznacza koniec nagłówków (tak będzie ustawiony ostatni).
     //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
     //! 
-    void async_read_response_headers(response_headers_t & response,const handler_t &handler);
+    void async_read_response_headers(ict::asio::message::response_headers_t & response,const handler_t &handler);
     //! Dodaje zadanie do wykonania w ramach ::asio::strand
     //! @param handler Zadanie do wykonania.
     void post(const asio_handler_t &handler);

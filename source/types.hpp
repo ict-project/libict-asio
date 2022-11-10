@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _ASIO_TYPES__HEADER
 //============================================
 #include <map>
+#include <vector>
 #include <string>
 #include <functional>
 #include <system_error>
@@ -48,7 +49,41 @@ typedef std::map<std::string,std::string> map_info_t;
 typedef std::error_code error_code_t;
 //! Ogólny handler
 typedef std::function<void(void)> asio_handler_t;
+//! Handler z obsługą błedu.
+typedef std::function<void(const error_code_t&)> error_handler_t;
 //============================================
-}}
+namespace message {
+//============================================
+//! Struktura z danymi zapytania.
+struct request_t {
+    std::string method;
+    std::string uri;
+    std::string version;
+};
+//! Struktura z danymi odpowiedzi.
+struct response_t {
+    std::string version;
+    std::string code;
+    std::string explanation;
+};
+//! Struktura z danymi nagłówka.
+struct header_t {
+    std::string name;
+    std::string value;  
+};
+//! Typ listy nagłówków.
+typedef std::vector<header_t> headers_t;
+//! Struktura z danymi zapytania oraz nagłówków.
+struct request_headers_t {
+    request_t request;
+    headers_t headers;
+};
+//! Struktura z danymi odpowiedzi oraz nagłówków.
+struct response_headers_t {
+    response_t response;
+    headers_t headers;
+};
+//============================================
+}}}
 //===========================================
 #endif
