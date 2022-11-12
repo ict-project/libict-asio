@@ -345,11 +345,7 @@ public:
   }
 };
 //============================================
-interface_ptr get(const std::string & host,const std::string & port,bool server){
-  ict::asio::connection::context_ptr empty=NULL;
-  return(get(host,port,empty,server));
-}
-interface_ptr get(const std::string & host,const std::string & port,const ict::asio::connection::context_ptr & context,bool server,const std::string & setSNI){
+interface_ptr get(const std::string & host,const std::string & port,bool server,const ict::asio::connection::context_ptr & context,const std::string & setSNI){
   interface_ptr ptr;
   if (server){
     ptr=std::make_shared<ServerConnector<::asio::ip::tcp::socket,::asio::ip::tcp::acceptor>>(context);
@@ -364,11 +360,7 @@ interface_ptr get(const std::string & host,const std::string & port,const ict::a
   ptr->info[_connector_sni_]=setSNI;
   return(ptr);
 }
-interface_ptr get(const std::string & path,bool server){
-  ict::asio::connection::context_ptr empty=NULL;
-  return(get(path,empty,server));
-}
-interface_ptr get(const std::string & path,const ict::asio::connection::context_ptr & context,bool server,const std::string & setSNI){
+interface_ptr get(const std::string & path,bool server,const ict::asio::connection::context_ptr & context,const std::string & setSNI){
   interface_ptr ptr;
   if (server){
     ptr=std::make_shared<ServerConnector<::asio::local::stream_protocol::socket,::asio::local::stream_protocol::acceptor>>(context);

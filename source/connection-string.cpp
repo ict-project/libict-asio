@@ -145,8 +145,8 @@ static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio
 
     port="300"+std::to_string(rand()%90+10);
     std::cout<<port<<std::endl;
-    ict::asio::connector::interface_ptr s1(ict::asio::connector::get("localhost",port,s_ctx,true));
-    ict::asio::connector::interface_ptr c1(ict::asio::connector::get("localhost",port,c_ctx,false,"c1"));
+    ict::asio::connector::interface_ptr s1(ict::asio::connector::get("localhost",port,true,s_ctx));
+    ict::asio::connector::interface_ptr c1(ict::asio::connector::get("localhost",port,false,c_ctx,"c1"));
     ict::asio::connection::string_ptr s1c;
     ict::asio::connection::string_ptr c1c;
     

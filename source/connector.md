@@ -3,8 +3,8 @@
 This module provides connectors that handling incoming (server) or outgoing (client) connections. In order to get a new connector one of following function should be used:
 * `ict::asio::connector::get(host,port,server)` - Gets pointer (`std::shared_ptr`) to a connector to host:port (TCP socket).
 * `ict::asio::connector::get(path,server)` - Gets pointer (`std::shared_ptr`) to a connector to path (local socket).
-* `ict::asio::connector::get(host,port,context,server,setSNI)` - Gets pointer (`std::shared_ptr`) to a connector to host:port (TCP socket) with SSL (defined by context).
-* `ict::asio::connector::get(path,context,server,setSNI)` - Gets pointer (`std::shared_ptr`) to a connector to path (local socket) with SSL (defined by context).
+* `ict::asio::connector::get(host,port,server,context,setSNI)` - Gets pointer (`std::shared_ptr`) to a connector to host:port (TCP socket) with SSL (defined by context).
+* `ict::asio::connector::get(path,server,context,setSNI)` - Gets pointer (`std::shared_ptr`) to a connector to path (local socket) with SSL (defined by context).
 
 The param `server` determines if connector is a server ('true') or a client ('false').
 
