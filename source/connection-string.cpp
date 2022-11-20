@@ -123,7 +123,7 @@ string_ptr getString(::asio::local::stream_protocol::socket & socket,context_ptr
 static const std::string server_example="'a','b','c','d'";
 static const std::string client_example="1,2,3,4,5,6,7,8,9,0";
 
-static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio::connection::context_ptr & c_ctx){
+static int test__connection(ict::asio::context_ptr & s_ctx,ict::asio::context_ptr & c_ctx){
   ict::asio::ioSignal();
   ict::asio::ioRun();
   {
@@ -222,7 +222,7 @@ static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio
   return(0);
 }
 REGISTER_TEST(connection_string,tc1){
-  ict::asio::connection::context_ptr ctx=NULL;
+  ict::asio::context_ptr ctx=NULL;
   return(test__connection(ctx,ctx));
 }
 #endif

@@ -102,10 +102,10 @@ template <class Socket> class BasicConnector: public interface {
 protected:
   bool ready=false;
   bool error=false;
-  ict::asio::connection::context_ptr context;
+  ict::asio::context_ptr context;
   ::asio::io_service::strand strand;
 public:
-  BasicConnector(const ict::asio::connection::context_ptr & c):context(c),strand(ict::asio::ioService()){
+  BasicConnector(const ict::asio::context_ptr & c):context(c),strand(ict::asio::ioService()){
   }
   bool is_error() const{
     return(error);
@@ -185,7 +185,7 @@ private:
     }
   }
 public:
-  ServerConnector(const ict::asio::connection::context_ptr & c):BasicConnector<Socket>(c),a(ict::asio::ioService()),s(ict::asio::ioService()){}
+  ServerConnector(const ict::asio::context_ptr & c):BasicConnector<Socket>(c),a(ict::asio::ioService()),s(ict::asio::ioService()){}
   ~ServerConnector(){
     unlink_path();
   }
@@ -311,7 +311,7 @@ private:
     );
   }
 public:
-  ClientConnector(const ict::asio::connection::context_ptr & c):BasicConnector<Socket>(c),s(ict::asio::ioService()),t(ict::asio::ioService()){}
+  ClientConnector(const ict::asio::context_ptr & c):BasicConnector<Socket>(c),s(ict::asio::ioService()),t(ict::asio::ioService()){}
   ~ClientConnector(){}
   void close(){
     auto self(interface::enable_shared_t::shared_from_this());
@@ -345,7 +345,7 @@ public:
   }
 };
 //============================================
-interface_ptr get(const std::string & host,const std::string & port,bool server,const ict::asio::connection::context_ptr & context,const std::string & setSNI){
+interface_ptr get(const std::string & host,const std::string & port,bool server,const ict::asio::context_ptr & context,const std::string & setSNI){
   interface_ptr ptr;
   if (server){
     ptr=std::make_shared<ServerConnector<::asio::ip::tcp::socket,::asio::ip::tcp::acceptor>>(context);
@@ -360,7 +360,7 @@ interface_ptr get(const std::string & host,const std::string & port,bool server,
   ptr->info[_connector_sni_]=setSNI;
   return(ptr);
 }
-interface_ptr get(const std::string & path,bool server,const ict::asio::connection::context_ptr & context,const std::string & setSNI){
+interface_ptr get(const std::string & path,bool server,const ict::asio::context_ptr & context,const std::string & setSNI){
   interface_ptr ptr;
   if (server){
     ptr=std::make_shared<ServerConnector<::asio::local::stream_protocol::socket,::asio::local::stream_protocol::acceptor>>(context);
@@ -388,7 +388,7 @@ REGISTER_TEST(connector,tc1){
   {
     std::atomic<int> k=4;
     std::string port;
-    //ict::asio::connection::context_ptr ctx(new ::asio::ssl::context(::asio::ssl::context::tls));
+    //ict::asio::context_ptr ctx(new ::asio::ssl::context(::asio::ssl::context::tls));
     ::asio::steady_timer t(ict::asio::ioService());
     srand(time(NULL));
 

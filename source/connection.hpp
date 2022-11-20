@@ -38,8 +38,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <string>
 #include <memory>
-#include <openssl/conf.h>
-#include <openssl/ssl.h>
 #include "types.hpp"
 //============================================
 namespace ict { namespace asio { namespace connection {
@@ -55,7 +53,7 @@ public:
   typedef std::vector<unsigned char> buffer_t;
   //! Metadane połączenia
   map_info_t info;
-  std::string getInfo(){
+  std::string getInfo() const {
     std::string o;
     for (map_info_t::const_iterator it=info.begin();it!=info.end();++it){
       if (it!=info.begin()) o+=",";
@@ -95,8 +93,6 @@ public:
 //===========================================
 //! Wskaźnik do interfejsu do obsługi połączeń.
 typedef std::shared_ptr<interface> interface_ptr;
-//! Wskaźnik do kontekstu połączenia SSL
-typedef SSL_CTX * context_ptr;
 //! Handler do obsługi nowych połączeń
 //! @param ec Kod błędu
 //! @param interface  Wskaźnik do interfejsu do obsługi połączeń.

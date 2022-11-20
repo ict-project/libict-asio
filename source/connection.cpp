@@ -253,7 +253,7 @@ interface_ptr get(::asio::local::stream_protocol::socket & socket,const context_
 #include "test.hpp"
 #include "asio.hpp"
 #include "connector.hpp"
-static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio::connection::context_ptr & c_ctx){
+static int test__connection(ict::asio::context_ptr & s_ctx,ict::asio::context_ptr & c_ctx){
   ict::asio::ioSignal();
   ict::asio::ioRun();
   {
@@ -368,7 +368,7 @@ static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio
   return(0);
 }
 REGISTER_TEST(connection,tc1){
-  ict::asio::connection::context_ptr ctx=NULL;
+  ict::asio::context_ptr ctx=NULL;
   return(test__connection(ctx,ctx));
 }
 #endif

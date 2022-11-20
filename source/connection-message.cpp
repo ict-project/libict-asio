@@ -613,18 +613,23 @@ void message::async_read_body(std::string & data,std::size_t & bytesLeft,const h
     auto self(enable_shared_t::shared_from_this());
     if (connection){
         connection->post([this,self,handler,&data,&bytesLeft](){
-            async_read_body([this,self,handler,&data,&bytesLeft](const ict::asio::error_code_t & ec){
-                if (ec){
-                    handler(ec);
-                } else {
-                    ict::asio::error_code_t ok;
-                    std::size_t size=(bytesLeft<read.size())?bytesLeft:read.size();
-                    bytesLeft-=size;
-                    data.append(read.c_str(),size);
-                    read.erase(0,size);
-                    handler(ok);
-                }
-            });
+            if (bytesLeft){
+                async_read_body([this,self,handler,&data,&bytesLeft](const ict::asio::error_code_t & ec){
+                    if (ec){
+                        handler(ec);
+                    } else {
+                        ict::asio::error_code_t ok;
+                        std::size_t size=(bytesLeft<read.size())?bytesLeft:read.size();
+                        bytesLeft-=size;
+                        data.append(read.c_str(),size);
+                        read.erase(0,size);
+                        handler(ok);
+                    }
+                });
+            } else {
+                ict::asio::error_code_t ok;
+                handler(ok);                
+            }
         });
     } else {
         ioServicePost([self,handler](){
@@ -774,7 +779,7 @@ static const ict::asio::message::request_headers_t client_example={
     }
 };
 
-static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio::connection::context_ptr & c_ctx){
+static int test__connection(ict::asio::context_ptr & s_ctx,ict::asio::context_ptr & c_ctx){
   ict::asio::ioSignal();
   ict::asio::ioRun();
   {
@@ -887,7 +892,7 @@ static int test__connection(ict::asio::connection::context_ptr & s_ctx,ict::asio
   return(0);
 }
 REGISTER_TEST(connection_message,tc1){
-  ict::asio::connection::context_ptr ctx=NULL;
+  ict::asio::context_ptr ctx=NULL;
   return(test__connection(ctx,ctx));
 }
 #endif

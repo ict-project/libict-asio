@@ -43,6 +43,7 @@ set(CMAKE_SOURCE_FILES
   connector.cpp
   timer.cpp
   lock.cpp
+  broker.cpp
 )
 
 include_directories(BEFORE SYSTEM ${OPENSSL_INCLUDE_DIR})
@@ -109,6 +110,7 @@ add_test(NAME ict-timer-tc8 COMMAND ${PROJECT_NAME}-test ict timer tc8)
 add_test(NAME ict-timer-tc9 COMMAND ${PROJECT_NAME}-test ict timer tc9)
 add_test(NAME ict-timer-tc10 COMMAND ${PROJECT_NAME}-test ict timer tc10)
 add_test(NAME ict-lock-tc1 COMMAND ${PROJECT_NAME}-test ict lock tc1)
+add_test(NAME ict-broker-tc1 COMMAND ${PROJECT_NAME}-test ict broker tc1)
 
 ################################################################
 #set(CPACK_GENERATOR "TZ;TGZ;STGZ;DEB;RPM") # Linux

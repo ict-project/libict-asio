@@ -75,13 +75,13 @@ typedef std::shared_ptr<interface> interface_ptr;
 //! @param server Informacja, czy to ma być konektor typu serwer, czy typu klient.
 //! @param context Informacja, czy połączenia mają być szyfrowane, czy nie (jeśli tak, to trzeba ustawić kontekst).
 //! @param setSNI Ustawnia SNI dla szyfrowanych połączeń wychodzących (klient).
-interface_ptr get(const std::string & host,const std::string & port,bool server=true,const ict::asio::connection::context_ptr & context=NULL,const std::string & setSNI="");
+interface_ptr get(const std::string & host,const std::string & port,bool server=true,const ict::asio::context_ptr & context=NULL,const std::string & setSNI="");
 //! Funkcja do tworzenia konektorów dla gniazd lokalnych.
 //! @param path Ścieżka, na której ma się bindować (jako serwer), lub do której ma się łączyć (jako klient).
 //! @param server Informacja, czy to ma być  konektor typu serwer, czy typu klient.
 //! @param context Informacja, czy połączenia mają być szyfrowane, czy nie (jeśli tak, to trzeba ustawić kontekst).
 //! @param setSNI Ustawnia SNI dla szyfrowanych połączeń wychodzących (klient).
-interface_ptr get(const std::string & path,bool server=true,const ict::asio::connection::context_ptr & context=NULL,const std::string & setSNI="");
+interface_ptr get(const std::string & path,bool server=true,const ict::asio::context_ptr & context=NULL,const std::string & setSNI="");
 //============================================
 }}}
 //===========================================

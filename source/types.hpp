@@ -40,6 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <functional>
 #include <system_error>
+#include <openssl/conf.h>
+#include <openssl/ssl.h>
 //============================================
 namespace ict { namespace asio {
 //============================================
@@ -51,6 +53,8 @@ typedef std::error_code error_code_t;
 typedef std::function<void(void)> asio_handler_t;
 //! Handler z obsługą błedu.
 typedef std::function<void(const error_code_t&)> error_handler_t;
+//! Wskaźnik do kontekstu połączenia SSL
+typedef SSL_CTX * context_ptr;
 //============================================
 namespace message {
 //============================================
