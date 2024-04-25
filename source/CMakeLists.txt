@@ -8,10 +8,32 @@ project(libict-${LIBRARY_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_LINK_LIBS "")
+
+macro(add_ict_subdir ICT_NAME)
+  set(CMAKE_SUBDIRECTORY      ${ICT_NAME})
+  set(CMAKE_SUBDIRECTORY_DIR  ../${CMAKE_SUBDIRECTORY})
+  set(CMAKE_SUBDIRECTORY_SRC  ${CMAKE_SUBDIRECTORY_DIR}/source)
+  set(CMAKE_SUBDIRECTORY_BLD  ${CMAKE_SUBDIRECTORY_DIR}/build)
+  set(CMAKE_SUBDIRECTORY_LIB  ${ICT_NAME}.so)
+
+  add_subdirectory(${CMAKE_SUBDIRECTORY_SRC} ${CMAKE_SUBDIRECTORY_BLD} EXCLUDE_FROM_ALL)
+
+  add_custom_target(
+    ${CMAKE_SUBDIRECTORY} ALL
+    COMMAND make
+    WORKING_DIRECTORY ${CMAKE_SUBDIRECTORY_DIR}
+  )
+
+  link_directories(${CMAKE_SUBDIRECTORY_BLD})
+  include_directories(${CMAKE_SUBDIRECTORY_DIR})
+
+  set(CMAKE_LINK_LIBS "${CMAKE_LINK_LIBS} ${CMAKE_SUBDIRECTORY_LIB}")
+  string(STRIP ${CMAKE_LINK_LIBS} CMAKE_LINK_LIBS)
+endmacro()
+
 find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)
-
-set(ASIO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../asio/asio/include)
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/info.hpp 
@@ -46,23 +68,27 @@ set(CMAKE_SOURCE_FILES
   broker.cpp
 )
 
+set(CMAKE_LINK_LIBS "${CMAKE_LINK_LIBS} -lcrypto")
+set(CMAKE_LINK_LIBS "${CMAKE_LINK_LIBS} -lssl")
+string(STRIP ${CMAKE_LINK_LIBS} CMAKE_LINK_LIBS)
+
 include_directories(BEFORE SYSTEM ${OPENSSL_INCLUDE_DIR})
+include_directories(AFTER SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/../asio/asio/include)
 
-add_library(ict-static STATIC ${CMAKE_SOURCE_FILES})
-target_link_libraries(ict-static ${OPENSSL_CRYPTO_LIBRARIES} ${OPENSSL_SSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-set_target_properties(ict-static  PROPERTIES OUTPUT_NAME ict-${LIBRARY_NAME})
-target_include_directories(ict-static PRIVATE ${ASIO_DIR})
+add_library(ict-static-${LIBRARY_NAME} STATIC ${CMAKE_SOURCE_FILES})
+target_link_libraries(ict-static-${LIBRARY_NAME} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(ict-static-${LIBRARY_NAME} ${CMAKE_LINK_LIBS})
+set_target_properties(ict-static-${LIBRARY_NAME}  PROPERTIES OUTPUT_NAME ict-${LIBRARY_NAME})
 
-add_library(ict-shared SHARED ${CMAKE_SOURCE_FILES})
-target_link_libraries(ict-shared ${OPENSSL_CRYPTO_LIBRARIES} ${OPENSSL_SSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-set_target_properties(ict-shared  PROPERTIES OUTPUT_NAME ict-${LIBRARY_NAME})
-target_include_directories(ict-shared PRIVATE ${ASIO_DIR})
+add_library(ict-shared-${LIBRARY_NAME} SHARED ${CMAKE_SOURCE_FILES})
+target_link_libraries(ict-shared-${LIBRARY_NAME} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(ict-shared-${LIBRARY_NAME} ${CMAKE_LINK_LIBS})
+set_target_properties(ict-shared-${LIBRARY_NAME}  PROPERTIES OUTPUT_NAME ict-${LIBRARY_NAME})
 
 add_executable(${PROJECT_NAME}-test all.hpp test.cpp ${CMAKE_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME}-test ${OPENSSL_CRYPTO_LIBRARIES} ${OPENSSL_SSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(${PROJECT_NAME}-test PRIVATE ${ASIO_DIR})
+target_link_libraries(${PROJECT_NAME}-test ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${PROJECT_NAME}-test ${CMAKE_LINK_LIBS})
 target_compile_definitions(${PROJECT_NAME}-test PUBLIC -DENABLE_TESTING)
-
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../.git)
   find_package(Git)
@@ -83,7 +109,7 @@ endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../.git)
 
 file(GLOB HEADER_LIST . *.hpp)
 
-install(TARGETS ict-static ict-shared DESTINATION lib COMPONENT libraries)
+install(TARGETS ict-static-${LIBRARY_NAME} ict-shared-${LIBRARY_NAME} DESTINATION lib COMPONENT libraries)
 install(
   FILES ${HEADER_LIST}
   DESTINATION include/libict/${LIBRARY_NAME} COMPONENT headers
