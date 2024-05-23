@@ -73,7 +73,7 @@ set(CMAKE_LINK_LIBS "${CMAKE_LINK_LIBS} -lssl")
 string(STRIP ${CMAKE_LINK_LIBS} CMAKE_LINK_LIBS)
 
 include_directories(BEFORE SYSTEM ${OPENSSL_INCLUDE_DIR})
-include_directories(AFTER SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/../asio/asio/include)
+include_directories(AFTER SYSTEM ../asio/asio/include)
 
 add_library(ict-static-${LIBRARY_NAME} STATIC ${CMAKE_SOURCE_FILES})
 target_link_libraries(ict-static-${LIBRARY_NAME} ${CMAKE_THREAD_LIBS_INIT})
