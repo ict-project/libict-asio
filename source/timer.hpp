@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //============================================
 #include <chrono>
 #include <functional>
+#include <memory>
 #include "types.hpp"
 //============================================
 namespace ict { namespace asio { namespace timer {
