@@ -14,8 +14,8 @@ Example of usage:
 int main(){
   ict::asio::ioSignal();//Sets signal handler.
   ict::asio::ioRun();//Runs io service.
-  ict::asio::ioService().post([](){//Ads task.
-    ict::asio::ioService().stop();//Stops io service
+  ict::asio::ioServicePost([](){//Ads task.
+    ict::asio::ioStop()//Stops io service
   });
   ict::asio::ioJoin();//Waits for threads end.
   return(0);
