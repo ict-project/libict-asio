@@ -63,6 +63,11 @@ void interface::async_connection(const ict::asio::connection::string_handler_t &
     handler(ec,ict::asio::connection::getString(ptr));
   });
 }
+void interface::async_connection(const ict::asio::connection::string2_handler_t &handler){
+  async_connection([handler](const error_code_t& ec,ict::asio::connection::interface_ptr ptr){
+    handler(ec,ict::asio::connection::getString2(ptr));
+  });
+}
 void interface::async_connection(const ict::asio::connection::message_handler_t &handler){
   async_connection([handler](const error_code_t& ec,ict::asio::connection::interface_ptr ptr){
     handler(ec,ict::asio::connection::getMessage(ptr));

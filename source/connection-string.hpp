@@ -86,6 +86,80 @@ typedef std::shared_ptr<string> string_ptr;
 //! @param interface  Wskaźnik do interfejsu do obsługi połączeń.
 typedef std::function<void(const error_code_t&,string_ptr)> string_handler_t;
 //============================================
+class string2 : public std::enable_shared_from_this<string2>{
+private:
+    bool is_ok=false;
+    //! Bufor do odczytu danych.
+    std::string read;
+    //! Bufor do zapisu danych.
+    std::string write;
+    //! Interfejs połączenia
+    string_ptr connection;
+public:
+    //! Typ pomocniczy do generowania wskaźnika.
+    typedef  std::enable_shared_from_this<string2> enable_shared_t;
+    //! Typ - Funkcja do obsługi zapisu lub odczytu.
+    typedef std::function<void(const ict::asio::error_code_t&,std::string&)> handler_t;
+public:
+    //!
+    //! @brief Konstruktor.
+    //! 
+    //! @param i Wskaźnik do podstawowego interfejsu.
+    //! 
+    string2(const interface_ptr & i):connection(new string(i)){
+        if (connection) if (connection->connection) is_ok=true;
+    }
+    string2(const string_ptr & i):connection(i){
+        if (connection) if (connection->connection) is_ok=true;
+    }
+    //! 
+    //! @brief Funkcja do asynchronicznego zapisu.
+    //! 
+    //! @param handler Funkcja, która ma zostać wykonana po zakończeniu zapisu.
+    //! 
+    void async_write_string(const handler_t &handler);
+    //! 
+    //! @brief Funkcja do asynchronicznego odczytu.
+    //! 
+    //! @param handler Funkcja, która ma zostać wykonana po zakończeniu odczytu.
+    //! 
+    void async_read_string(const handler_t &handler);
+        //! 
+    //! @brief Funkcja do operacji na buforze zapisu.
+    //! 
+    //! @param handler Funkcja, która ma zostać wykonana.
+    //! 
+    void post_write_string(const handler_t &handler);
+    //! 
+    //! @brief Funkcja do operacji na buforze odczytu.
+    //! 
+    //! @param handler Funkcja, która ma zostać wykonana.
+    //! 
+    void post_read_string(const handler_t &handler);
+    //! Funkcja zamyka połączenie.
+    void close();
+    //! Sprawdza, czy połaczenie jest nadal otwarte.
+    bool is_open() const;
+    //! Zwraca ilość bajtów oczekujących na odczyt.
+    std::size_t available() const;
+    //! Anuluje wszystkie asynchroniczne operacje w połączeniu.
+    void cancel();
+    void cancel(error_code_t& ec);
+    //! Zwraca nazwę serwera (SNI).
+    //! @returns Nazwa serwera (SNI).
+    const std::string & getSNI();
+    //! Metadane połączenia
+    map_info_t & getInfoMap();
+    std::string getInfo() const;
+};
+//===========================================
+//! Wskaźnik do interfejsu do obsługi połączeń.
+typedef std::shared_ptr<string2> string2_ptr;
+//! Handler do obsługi nowych połączeń
+//! @param ec Kod błędu
+//! @param interface  Wskaźnik do interfejsu do obsługi połączeń.
+typedef std::function<void(const error_code_t&,string2_ptr)> string2_handler_t;
+//============================================
 }}}
 //===========================================
 #endif

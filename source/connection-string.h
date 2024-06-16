@@ -68,6 +68,13 @@ string_ptr getString(::asio::ip::tcp::socket & socket,context_ptr & context,cons
 //! @param setSNI Ustawia nazwę serwera (SNI) - gdy połączenie jako klient.
 //! @returns Wskaźnik do interfejsu (string) do obsługi połączenia.
 string_ptr getString(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI="");
+
+string2_ptr getString2(interface_ptr iface);
+string2_ptr getString2(string_ptr iface);
+string2_ptr getString2(::asio::ip::tcp::socket & socket);
+string2_ptr getString2(::asio::local::stream_protocol::socket & socket);
+string2_ptr getString2(::asio::ip::tcp::socket & socket,context_ptr & context,const std::string & setSNI);
+string2_ptr getString2(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI);
 //============================================
 }}}
 //===========================================

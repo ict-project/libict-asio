@@ -63,6 +63,7 @@ public:
     //! @param handler Funkcja do obsługi nowego połaczenia.
     virtual void async_connection(const ict::asio::connection::connection_handler_t &handler)=0;
     void async_connection(const ict::asio::connection::string_handler_t &handler);
+    void async_connection(const ict::asio::connection::string2_handler_t &handler);
     void async_connection(const ict::asio::connection::message_handler_t &handler);
 };
 //===========================================

@@ -112,6 +112,119 @@ string_ptr getString(::asio::ip::tcp::socket & socket,context_ptr & context,cons
 string_ptr getString(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI){
     return get(get(socket,context,setSNI));
 }
+string2_ptr getString2(string_ptr iface){
+    return string2_ptr(std::make_shared<string2>(iface));
+}
+string2_ptr getString2(interface_ptr iface){
+    return getString2(getString(iface));
+}
+string2_ptr getString2(::asio::ip::tcp::socket & socket){
+    return getString2(get(get(socket)));
+}
+string2_ptr getString2(::asio::local::stream_protocol::socket & socket){
+    return getString2(get(get(socket)));
+}
+string2_ptr getString2(::asio::ip::tcp::socket & socket,context_ptr & context,const std::string & setSNI){
+    return getString2(get(get(socket,context,setSNI)));
+}
+string2_ptr getString2(::asio::local::stream_protocol::socket & socket,context_ptr & context,const std::string & setSNI){
+    return getString2(get(get(socket,context,setSNI)));
+}
+//============================================
+void string2::async_write_string(const handler_t &handler){
+  auto self(enable_shared_t::shared_from_this());
+  if (is_ok){
+    connection->async_write_string(write,[this,self,handler](const ict::asio::error_code_t& ec){
+      handler(ec,write);
+    });
+  } else {
+    static const ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+    handler(ec,write);
+  }
+}
+void string2::async_read_string(const handler_t &handler){
+  auto self(enable_shared_t::shared_from_this());
+  if (is_ok){
+    connection->async_read_string(read,[this,self,handler](const ict::asio::error_code_t& ec){
+      handler(ec,read);
+    });
+  } else {
+    static const ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+    handler(ec,read);
+  }
+}
+void string2::post_write_string(const handler_t &handler){
+  auto self(enable_shared_t::shared_from_this());
+  if (is_ok){
+    connection->connection->post([this,self,handler](){
+      static const ict::asio::error_code_t ec;
+      handler(ec,write);
+    });
+  } else {
+    static const ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+    handler(ec,write);
+  }
+}
+void string2::post_read_string(const handler_t &handler){
+  auto self(enable_shared_t::shared_from_this());
+  if (is_ok){
+    connection->connection->post([this,self,handler](){
+      static const ict::asio::error_code_t ec;
+      handler(ec,read);
+    });
+  } else {
+    static const ict::asio::error_code_t ec(ENOTCONN,std::generic_category());
+    handler(ec,read);
+  }
+}
+void string2::close(){
+  if (is_ok){
+    connection->connection->close();
+  }
+}
+bool string2::is_open() const{
+  if (is_ok){
+    return connection->connection->is_open();
+  }
+  return false;
+}
+std::size_t string2::available() const{
+  if (is_ok){
+    return connection->connection->available();
+  }
+  return false;
+}
+void string2::cancel(){
+  if (is_ok){
+    connection->connection->cancel();
+  }
+}
+void string2::cancel(error_code_t& ec){
+  if (is_ok){
+    connection->connection->cancel(ec);
+  }
+}
+const std::string & string2::getSNI(){
+  static const std::string empty;
+  if (is_ok){
+    return connection->connection->getSNI();
+  }
+  return empty;
+}
+map_info_t & string2::getInfoMap(){
+  static map_info_t empty;
+  if (is_ok){
+    return connection->connection->info;
+  }
+  return empty;
+}
+std::string string2::getInfo() const {
+  static const std::string empty;
+  if (is_ok){
+    return connection->connection->getSNI();
+  }
+  return empty;
+}
 //============================================
 }}}
 //============================================
