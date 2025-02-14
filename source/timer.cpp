@@ -94,7 +94,7 @@ std::chrono::system_clock::time_point convert(const date_time_t & dt,bool local)
     t.tm_min=dt.minute;
     t.tm_sec=dt.second;
     t.tm_isdst=dt.is_dst?1:0;
-    return std::chrono::system_clock::from_time_t(local?timelocal(&t):timegm(&t));
+    return std::chrono::system_clock::from_time_t(local?mktime(&t):timegm(&t));
 }
 date_time_t convert(const std::chrono::system_clock::time_point & tp,bool local){
     std::time_t tt=std::chrono::system_clock::to_time_t(tp);

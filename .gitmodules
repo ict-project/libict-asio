@@ -1,3 +1,6 @@
 [submodule "asio"]
 	path = asio
 	url = https://github.com/chriskohlhoff/asio.git
+[submodule "libict-dev-tools"]
+	path = libict-dev-tools
+	url = https://github.com/ict-project/libict-dev-tools.git
